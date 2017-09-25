@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip, FormControl } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip, ButtonGroup } from 'react-bootstrap';
 import $ from 'jquery'
 import ec from 'echarts'
 import { DatePicker, Select, InputNumber } from 'antd_';
@@ -188,14 +188,13 @@ export default class Dashboard extends React.Component {
                         </Nav>
                         <Nav pullRight>
                             <NavItem>
-                                <Button bsStyle="primary" style={margin}>年</Button>
+                                <ButtonGroup>
+                                    <Button>年</Button>
+                                    <Button>月</Button>
+                                    <Button>日</Button>
+                                </ButtonGroup>
                             </NavItem>
-                            <NavItem>
-                                <Button bsStyle="primary" style={margin}>月</Button>
-                            </NavItem>
-                            <NavItem>
-                                <Button bsStyle="primary" style={margin}>日</Button>
-                            </NavItem>
+
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
