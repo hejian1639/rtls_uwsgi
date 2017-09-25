@@ -19,7 +19,7 @@ export default class Dashboard extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { showModal: false };
+        this.state = { showModal: false, beginDate: new Date(), endDate: new Date() };
     }
 
 
@@ -145,8 +145,19 @@ export default class Dashboard extends React.Component {
         this.setState({ showModal: false });
     }
 
+
+    handleBeginDateChange(value) {
+        this.setState({ beginDate: new Date(value.getTime()) });
+    }
+
+    handleEndDateChange(value) {
+        this.setState({ endDate: new Date(value.getTime()) });
+    }
+
     render() {
         var margin = {};
+        var rowMargin = {marginTop: '20px', marginBottom: '20px'} ;
+
         const popover = (
             <Popover id="modal-popover" title="popover">
                 very popover. such engagement
@@ -158,7 +169,7 @@ export default class Dashboard extends React.Component {
             </Tooltip>
         );
         const dummySentences = ['Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'Donec hendrerit tempor tellus.', 'Donec pretium posuere tellus.', 'Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.', 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.', 'Nulla posuere.', 'Donec vitae dolor.', 'Nullam tristique diam non turpis.', 'Cras placerat accumsan nulla.', 'Nullam rutrum.', 'Nam vestibulum accumsan nisl.'];
-        
+
         return (
             <div >
                 <Navbar collapseOnSelect>
@@ -194,12 +205,19 @@ export default class Dashboard extends React.Component {
                     </Modal.Header>
                     <Modal.Body>
                         <Grid>
-                            <Row className="show-grid">
+                            <Row className="show-grid" style={{marginBottom: '50px'}}>
                                 <Col md={1}>时间：</Col>
                                 <Col md={1}>起始时间</Col>
-                                <Col md={2}><DatePicker value="2015-01-01" /></Col>
+                                <Col md={2}><DatePicker value={this.state.beginDate} onSelect={this.handleBeginDateChange.bind(this)} /></Col>
                                 <Col md={1}>结束时间</Col>
-                                <Col md={2}><DatePicker value="2015-01-01" /></Col>
+                                <Col md={2}><DatePicker value={this.state.endDate} onSelect={this.handleEndDateChange.bind(this)} /></Col>
+                            </Row>
+                            <Row className="show-grid" style={{marginTop: '50px'}}>
+                                <Col md={1}>查询：</Col>
+                                <Col md={1}>起始时间</Col>
+                                <Col md={2}><DatePicker value={this.state.beginDate} onChange={this.handleBeginDateChange.bind(this)} /></Col>
+                                <Col md={1}>结束时间</Col>
+                                <Col md={2}><DatePicker value={this.state.endDate} onChange={this.handleEndDateChange.bind(this)} /></Col>
                             </Row>
                         </Grid>
                     </Modal.Body>
