@@ -1,27 +1,34 @@
 
 import React from 'react'
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
 import $ from 'jquery'
 import ec from 'echarts'
+import { DatePicker } from 'antd';
+
+
+class QueryDialog extends React.Component {
+
+}
 
 
 
-export default React.createClass({
-    contextTypes: {
+export default class Dashboard extends React.Component {
+    static contextTypes = {
         router: React.PropTypes.object.isRequired,
-    },
+    };
 
-    handleClick: function (path) {
-        this.context.router.push({
-            pathname: path,
-        })
-    },
+    constructor(props) {
+        super(props);
+        this.state = { showModal: false };
+    }
 
-    componentWillMount: function () {
+
+
+    componentWillMount() {
         $('#pageLoading').hide();
-    },
+    }
 
-    componentDidMount: function () {
+    componentDidMount() {
         var myChart = ec.init(document.getElementById('chart'));
 
         myChart.setOption({
@@ -128,10 +135,30 @@ export default React.createClass({
             ]
         });
         // $('#pageLoading').hide();
-    },
+    }
 
-    render: function () {
+    open() {
+        this.setState({ showModal: true });
+    }
+
+    close() {
+        this.setState({ showModal: false });
+    }
+
+    render() {
         var margin = {};
+        const popover = (
+            <Popover id="modal-popover" title="popover">
+                very popover. such engagement
+            </Popover>
+        );
+        const tooltip = (
+            <Tooltip id="modal-tooltip">
+                wow.
+            </Tooltip>
+        );
+        const dummySentences = ['Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'Donec hendrerit tempor tellus.', 'Donec pretium posuere tellus.', 'Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.', 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.', 'Nulla posuere.', 'Donec vitae dolor.', 'Nullam tristique diam non turpis.', 'Cras placerat accumsan nulla.', 'Nullam rutrum.', 'Nam vestibulum accumsan nisl.'];
+        
         return (
             <div >
                 <Navbar collapseOnSelect>
@@ -143,7 +170,7 @@ export default React.createClass({
                     <Navbar.Collapse>
                         <Nav>
                             <NavItem>
-                                <Button bsStyle="primary" style={margin}>查询</Button>
+                                <Button bsStyle="primary" style={margin} onClick={this.open.bind(this)}>查询</Button>
                             </NavItem>
                         </Nav>
                         <Nav pullRight>
@@ -161,11 +188,30 @@ export default React.createClass({
                 </Navbar>
                 <div id='chart' style={{ height: '600px', border: '1px solid #ccc', padding: '10px' }} />
 
+                <Modal bsSize="large" show={this.state.showModal} onHide={this.close.bind(this)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>查询</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Grid>
+                            <Row className="show-grid">
+                                <Col md={1}>时间：</Col>
+                                <Col md={1}>起始时间</Col>
+                                <Col md={2}><DatePicker value="2015-01-01" /></Col>
+                                <Col md={1}>结束时间</Col>
+                                <Col md={2}><DatePicker value="2015-01-01" /></Col>
+                            </Row>
+                        </Grid>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this.close.bind(this)}>关闭</Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
 
         );
     }
-});
+}
 
 
 
