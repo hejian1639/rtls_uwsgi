@@ -1,9 +1,11 @@
 
 import React from 'react'
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip, FormControl } from 'react-bootstrap';
 import $ from 'jquery'
 import ec from 'echarts'
-import { DatePicker } from 'antd';
+import { DatePicker, Select } from 'antd_';
+const Option = Select.Option;
+import moment from 'moment';
 
 
 class QueryDialog extends React.Component {
@@ -19,7 +21,7 @@ export default class Dashboard extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { showModal: false, beginDate: new Date(), endDate: new Date() };
+        this.state = { showModal: false, beginDate: moment(), endDate: moment() };
     }
 
 
@@ -147,16 +149,16 @@ export default class Dashboard extends React.Component {
 
 
     handleBeginDateChange(value) {
-        this.setState({ beginDate: new Date(value.getTime()) });
+        this.setState({ beginDate: value });
     }
 
     handleEndDateChange(value) {
-        this.setState({ endDate: new Date(value.getTime()) });
+        this.setState({ endDate: value });
     }
 
     render() {
         var margin = {};
-        var rowMargin = {marginTop: '20px', marginBottom: '20px'} ;
+        var rowMargin = { marginTop: '20px', marginBottom: '20px' };
 
         const popover = (
             <Popover id="modal-popover" title="popover">
@@ -205,19 +207,40 @@ export default class Dashboard extends React.Component {
                     </Modal.Header>
                     <Modal.Body>
                         <Grid>
-                            <Row className="show-grid" style={{marginBottom: '50px'}}>
-                                <Col md={1}>时间：</Col>
-                                <Col md={1}>起始时间</Col>
-                                <Col md={2}><DatePicker value={this.state.beginDate} onSelect={this.handleBeginDateChange.bind(this)} /></Col>
-                                <Col md={1}>结束时间</Col>
-                                <Col md={2}><DatePicker value={this.state.endDate} onSelect={this.handleEndDateChange.bind(this)} /></Col>
+                            <Row className="show-grid" style={{ marginBottom: '30px' }}>
+                                <Col sm={1}>时间：</Col>
+                                <Col sm={3}>
+                                    <span style={{ marginRight: '10px' }}>起始时间</span><DatePicker defaultValue={this.state.beginDate} onChange={this.handleBeginDateChange.bind(this)} />
+                                </Col>
+                                <Col sm={3}>
+                                    <span style={{ marginRight: '10px' }}>结束时间</span><DatePicker defaultValue={this.state.endDate} onChange={this.handleEndDateChange.bind(this)} />
+                                </Col>
                             </Row>
-                            <Row className="show-grid" style={{marginTop: '50px'}}>
-                                <Col md={1}>查询：</Col>
-                                <Col md={1}>起始时间</Col>
-                                <Col md={2}><DatePicker value={this.state.beginDate} onChange={this.handleBeginDateChange.bind(this)} /></Col>
-                                <Col md={1}>结束时间</Col>
-                                <Col md={2}><DatePicker value={this.state.endDate} onChange={this.handleEndDateChange.bind(this)} /></Col>
+                            <Row className="show-grid" style={{ marginTop: '30px' }}>
+                                <Col sm={1}>查询：</Col>
+                                <Col sm={3}>
+                                    <span style={{ marginRight: '10px' }}>会员</span>
+                                    <Select mode="multiple" style={{ width: 200 }}>
+                                        <Option key="张三">张三</Option >
+                                        <Option key="李四">李四</Option >
+                                        <Option key="王五">王五</Option >
+                                        <Option key="赵六">赵六</Option >
+                                    </Select>
+                                </Col>
+                                <Col sm={3}>
+                                <span style={{ marginRight: '10px' }}>群组</span>
+                                    <Select style={{width:200}}>
+                                        <Option key="太极">太极</Option >
+                                        <Option key="舞蹈">舞蹈</Option >
+                                    </Select>
+                                </Col>
+                                <Col sm={3}>
+                                <span style={{ marginRight: '10px' }}>年龄</span>
+                                    <Select style={{width:200}}>
+                                        <Option key="太极">太极</Option >
+                                        <Option key="舞蹈">舞蹈</Option >
+                                    </Select>
+                                </Col>
                             </Row>
                         </Grid>
                     </Modal.Body>
