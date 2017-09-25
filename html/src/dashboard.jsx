@@ -3,7 +3,7 @@ import React from 'react'
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip, FormControl } from 'react-bootstrap';
 import $ from 'jquery'
 import ec from 'echarts'
-import { DatePicker, Select } from 'antd_';
+import { DatePicker, Select, InputNumber } from 'antd_';
 const Option = Select.Option;
 import moment from 'moment';
 
@@ -216,8 +216,8 @@ export default class Dashboard extends React.Component {
                                     <span style={{ marginRight: '10px' }}>结束时间</span><DatePicker defaultValue={this.state.endDate} onChange={this.handleEndDateChange.bind(this)} />
                                 </Col>
                             </Row>
-                            <Row className="show-grid" style={{ marginTop: '30px' }}>
-                                <Col sm={1}>查询：</Col>
+                            <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
+                                <Col sm={1}>查询条件：</Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>会员</span>
                                     <Select mode="multiple" style={{ width: 200 }}>
@@ -228,19 +228,32 @@ export default class Dashboard extends React.Component {
                                     </Select>
                                 </Col>
                                 <Col sm={3}>
-                                <span style={{ marginRight: '10px' }}>群组</span>
-                                    <Select style={{width:200}}>
+                                    <span style={{ marginRight: '10px' }}>群组</span>
+                                    <Select style={{ width: 200 }}>
                                         <Option key="太极">太极</Option >
                                         <Option key="舞蹈">舞蹈</Option >
                                     </Select>
                                 </Col>
-                                <Col sm={3}>
-                                <span style={{ marginRight: '10px' }}>年龄</span>
-                                    <Select style={{width:200}}>
-                                        <Option key="太极">太极</Option >
-                                        <Option key="舞蹈">舞蹈</Option >
+                            </Row>
+                            <Row className="show-grid" style={{ marginTop: '10px', marginBottom: '30px' }}>
+                                <Col smOffset={1} sm={3}>
+                                    <span style={{ marginRight: '10px' }}>年龄</span>
+                                    <InputNumber min={1} max={100} />
+                                    <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
+                                    <InputNumber min={1} max={100} />
+                                </Col>
+                                <Col sm={2}>
+                                    <span style={{ marginRight: '10px' }}>性别</span>
+                                    <Select style={{ width: 100 }}>
+                                        <Option key="男">男</Option >
+                                        <Option key="女">女</Option >
                                     </Select>
                                 </Col>
+                            </Row>
+                            <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
+                                <Col sm={3}><Button bsStyle="primary">查询速度</Button></Col>
+                                <Col sm={3}><Button bsStyle="primary">查询轨迹</Button></Col>
+                                <Col sm={3}><Button bsStyle="primary">查询热点</Button></Col>
                             </Row>
                         </Grid>
                     </Modal.Body>
