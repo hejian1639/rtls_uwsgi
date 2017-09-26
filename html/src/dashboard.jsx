@@ -25,7 +25,7 @@ export default class Dashboard extends React.Component {
                 }
             },
             legend: {
-                data: ['平均值','最大值','最小值']
+                data: ['平均值', '最大值', '最小值']
             },
             toolbox: {
                 show: true,
@@ -60,16 +60,16 @@ export default class Dashboard extends React.Component {
                     data: [320, 332, 301, 334, 390, 330, 320]
                 },
                 {
-                    name:'最大值',
-                    type:'bar',
+                    name: '最大值',
+                    type: 'bar',
                     stack: '速度',
-                    data:[120, 132, 101, 134, 90, 230, 210]
+                    data: [120, 132, 101, 134, 90, 230, 210]
                 },
                 {
-                    name:'最小值',
-                    type:'bar',
+                    name: '最小值',
+                    type: 'bar',
                     stack: '速度',
-                    data:[220, 182, 191, 234, 290, 330, 310]
+                    data: [220, 182, 191, 234, 290, 330, 310]
                 },
             ]
 
@@ -107,9 +107,9 @@ export default class Dashboard extends React.Component {
         this.setState({ endDate: value });
     }
 
-    querySpeed(){
-        $.get( "/speed/?name=小李&group=舞蹈&sex=male" ).then(
-            (data) =>{
+    querySpeed() {
+        $.get("/speed/", { name: '小李', group: '舞蹈', sex: 'male' }).then(
+            (data) => {
                 console.log(data);
                 this.close();
             }
