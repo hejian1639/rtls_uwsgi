@@ -27,8 +27,17 @@ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         moment.locale('zh-cn');
-        this.state = { showModal: false, beginDate: fixTime(moment().unix()), endDate: fixTime(moment().unix()), names: [] };
+        this.state = {
+            showModal: false,
+            beginDate: fixTime(moment().unix()),
+            endDate: fixTime(moment().unix()),
+            names: [],
+            groups: [],
+            selectedName: [],
+            selectedGroup: ''
+        };
         $.getJSON("/names/").then((data) => this.setState({ names: data }));
+        $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
 
         this.option = {
             tooltip: {
@@ -167,6 +176,14 @@ export default class Dashboard extends React.Component {
         this.setState({ endDate: fixTime(value.unix()) });
     }
 
+    handleNameSelect(value) {
+        this.setState({ selectedName: value })
+    }
+
+    handleGroupSelect(value) {
+        this.setState({ selectedGroup: value })
+    }
+
     queryNames() {
         $.getJSON("/names/").then((data) => this.state.names = data);
     }
@@ -195,6 +212,12 @@ export default class Dashboard extends React.Component {
         this.state.names.forEach(function (element) {
             names.push(<Option key={element._id}>{element._id}</Option>);
         });
+
+        var groups = [];
+        this.state.groups.forEach(function (element) {
+            groups.push(<Option key={element._id}>{element._id}</Option>);
+        });
+
         return (
             <div >
                 <Navbar collapseOnSelect>
@@ -244,15 +267,14 @@ export default class Dashboard extends React.Component {
                                 <Col sm={1}>查询条件：</Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>会员</span>
-                                    <Select mode="multiple" style={{ width: 200 }}>
+                                    <Select mode="multiple" defaultValue={this.state.selectedName} onChange={this.handleNameSelect.bind(this)} style={{ width: 200 }}>
                                         {names}
                                     </Select>
                                 </Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>群组</span>
-                                    <Select style={{ width: 200 }}>
-                                        <Option key="太极">太极</Option >
-                                        <Option key="舞蹈">舞蹈</Option >
+                                    <Select defaultValue={this.state.selectedGroup} onChange={this.handleGroupSelect.bind(this)} style={{ width: 200 }}>
+                                        {groups}
                                     </Select>
                                 </Col>
                             </Row>

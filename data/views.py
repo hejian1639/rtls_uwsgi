@@ -23,6 +23,14 @@ def name_query(request):
 
     return HttpResponse(status=404)
 
+def group_query(request):
+    if request.method == 'GET':
+        result = db.rtls.aggregate([{"$group" : {"_id" : "$group", "number" : {"$sum" : 1}}}])
+        result = list(result)
+        print json.dumps(result).decode("unicode_escape")
+        return JSONResponse(result)
+
+    return HttpResponse(status=404)
 
 def speed_query(request):
     DAY = 24*60*60
