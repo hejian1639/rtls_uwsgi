@@ -8,12 +8,6 @@ const Option = Select.Option;
 import moment from 'moment';
 
 
-class QueryDialog extends React.Component {
-
-}
-
-
-
 export default class Dashboard extends React.Component {
     static contextTypes = {
         router: React.PropTypes.object.isRequired,
@@ -22,18 +16,8 @@ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = { showModal: false, beginDate: moment(), endDate: moment() };
-    }
 
-
-
-    componentWillMount() {
-        $('#pageLoading').hide();
-    }
-
-    componentDidMount() {
-        var myChart = ec.init(document.getElementById('chart'));
-
-        myChart.setOption({
+        this.option = {
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {            // 坐标轴指示器，坐标轴触发有效
@@ -41,7 +25,7 @@ export default class Dashboard extends React.Component {
                 }
             },
             legend: {
-                data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎', '百度', '谷歌', '必应', '其他']
+                data: ['平均值','最大值','最小值']
             },
             toolbox: {
                 show: true,
@@ -70,72 +54,39 @@ export default class Dashboard extends React.Component {
             ],
             series: [
                 {
-                    name: '直接访问',
+                    name: '平均值',
                     type: 'bar',
+                    stack: '速度',
                     data: [320, 332, 301, 334, 390, 330, 320]
                 },
                 {
-                    name: '邮件营销',
-                    type: 'bar',
-                    stack: '广告',
-                    data: [120, 132, 101, 134, 90, 230, 210]
+                    name:'最大值',
+                    type:'bar',
+                    stack: '速度',
+                    data:[120, 132, 101, 134, 90, 230, 210]
                 },
                 {
-                    name: '联盟广告',
-                    type: 'bar',
-                    stack: '广告',
-                    data: [220, 182, 191, 234, 290, 330, 310]
+                    name:'最小值',
+                    type:'bar',
+                    stack: '速度',
+                    data:[220, 182, 191, 234, 290, 330, 310]
                 },
-                {
-                    name: '视频广告',
-                    type: 'bar',
-                    stack: '广告',
-                    data: [150, 232, 201, 154, 190, 330, 410]
-                },
-                {
-                    name: '搜索引擎',
-                    type: 'bar',
-                    data: [862, 1018, 964, 1026, 1679, 1600, 1570],
-                    markLine: {
-                        itemStyle: {
-                            normal: {
-                                lineStyle: {
-                                    type: 'dashed'
-                                }
-                            }
-                        },
-                        data: [
-                            [{ type: 'min' }, { type: 'max' }]
-                        ]
-                    }
-                },
-                {
-                    name: '百度',
-                    type: 'bar',
-                    barWidth: 5,
-                    stack: '搜索引擎',
-                    data: [620, 732, 701, 734, 1090, 1130, 1120]
-                },
-                {
-                    name: '谷歌',
-                    type: 'bar',
-                    stack: '搜索引擎',
-                    data: [120, 132, 101, 134, 290, 230, 220]
-                },
-                {
-                    name: '必应',
-                    type: 'bar',
-                    stack: '搜索引擎',
-                    data: [60, 72, 71, 74, 190, 130, 110]
-                },
-                {
-                    name: '其他',
-                    type: 'bar',
-                    stack: '搜索引擎',
-                    data: [62, 82, 91, 84, 109, 110, 120]
-                }
             ]
-        });
+
+        }
+    }
+
+
+
+    componentWillMount() {
+        $('#pageLoading').hide();
+    }
+
+    componentDidMount() {
+        var myChart = ec.init(document.getElementById('chart'));
+
+
+        myChart.setOption(this.option);
         // $('#pageLoading').hide();
     }
 
@@ -154,6 +105,15 @@ export default class Dashboard extends React.Component {
 
     handleEndDateChange(value) {
         this.setState({ endDate: value });
+    }
+
+    querySpeed(){
+        $.get( "/speed/?name=小李&group=舞蹈&sex=male" ).then(
+            (data) =>{
+                console.log(data);
+                this.close();
+            }
+        );
     }
 
     render() {
@@ -244,13 +204,13 @@ export default class Dashboard extends React.Component {
                                 <Col sm={2}>
                                     <span style={{ marginRight: '10px' }}>性别</span>
                                     <Select style={{ width: 100 }}>
-                                        <Option key="男">男</Option >
-                                        <Option key="女">女</Option >
+                                        <Option key="male">男</Option >
+                                        <Option key="female">女</Option >
                                     </Select>
                                 </Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-                                <Col sm={3}><Button bsStyle="primary">查询速度</Button></Col>
+                                <Col sm={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)}>查询速度</Button></Col>
                                 <Col sm={3}><Button bsStyle="primary">查询轨迹</Button></Col>
                                 <Col sm={3}><Button bsStyle="primary">查询热点</Button></Col>
                             </Row>
