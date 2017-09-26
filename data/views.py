@@ -18,6 +18,7 @@ class JSONResponse(HttpResponse):
 
 def speed_query(request):
     DAY = 24*60*60
+    TIME_OFFSET = 8*60*60
 
     if request.method == 'GET':
         name = request.GET.get('name')
@@ -42,9 +43,13 @@ def speed_query(request):
         code += "if(this.time > " + endTime + ")"
         code += "return;"
 
-        code += "emit(this.time-this.time%"+str(DAY)+", {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
+        code += "var time = this.time + " + str(TIME_OFFSET) + ";"
+        code += "time -= time%"+str(DAY)+";"
+        code += "time -= "+str(TIME_OFFSET)+";"
+
+        code += "emit(time, {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
         code += "}"
-        print code
+        # print code
         map = Code(code)
 
         code ="function(key, values) {"
@@ -73,6 +78,8 @@ def speed_query(request):
         for doc in result.find():
             ret.append(doc)
 
-        return HttpResponse(json.dumps(ret))
+        print json.dumps(ret)
+
+        return JSONResponse(ret)
 
     return HttpResponse(status=404)
