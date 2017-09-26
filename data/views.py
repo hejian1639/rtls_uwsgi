@@ -17,10 +17,14 @@ class JSONResponse(HttpResponse):
 
 
 def speed_query(request):
+    DAY = 24*60*60
+
     if request.method == 'GET':
         name = request.GET.get('name')
         group = request.GET.get('group')
         sex = request.GET.get('sex')
+        begTime = request.GET.get('begTime')
+        endTime = request.GET.get('endTime')
 
         code ="function() {"
         if(name != None):
@@ -32,9 +36,15 @@ def speed_query(request):
         if(sex != None):
             code += "if(this.sex != \"" + sex + "\")"
             code += "return;"
-        code += "emit(0, {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
+
+        code += "if(this.time < " + begTime + ")"
+        code += "return;"
+        code += "if(this.time > " + endTime + ")"
+        code += "return;"
+
+        code += "emit(this.time-this.time%"+str(DAY)+", {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
         code += "}"
-        # print code
+        print code
         map = Code(code)
 
         code ="function(key, values) {"
@@ -60,7 +70,8 @@ def speed_query(request):
 
         result = db.rtls.map_reduce(map, reduce, "result")
         for doc in result.find():
-            return HttpResponse(json.dumps(doc["value"]))
+            return HttpResponse(json.dumps(doc))
+
         return HttpResponse(status=404)
 
     return HttpResponse(status=404)
