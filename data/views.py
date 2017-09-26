@@ -69,9 +69,12 @@ def speed_query(request):
         reduce = Code(code)
 
         result = db.rtls.map_reduce(map, reduce, "result")
-        for doc in result.find():
-            return HttpResponse(json.dumps(doc))
+        ret = "["
 
-        return HttpResponse(status=404)
+        for doc in result.find():
+            ret += (json.dumps(doc)) + ","
+
+        ret += "]"
+        return HttpResponse(ret)
 
     return HttpResponse(status=404)
