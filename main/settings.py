@@ -122,3 +122,9 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR,'html'),#default:app/static or BASE_DIR/static
 )
 WEBSOCKET_FACTORY_CLASS = 'dwebsocket.backends.uwsgi.factory.uWsgiWebSocketFactory'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}

@@ -27,7 +27,8 @@ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         moment.locale('zh-cn');
-        this.state = { showModal: false, beginDate: fixTime(moment().unix()), endDate: fixTime(moment().unix()) };
+        this.state = { showModal: false, beginDate: fixTime(moment().unix()), endDate: fixTime(moment().unix()), names: [] };
+        $.getJSON("/names/").then((data) => this.setState({ names: data }));
 
         this.option = {
             tooltip: {
@@ -166,6 +167,10 @@ export default class Dashboard extends React.Component {
         this.setState({ endDate: fixTime(value.unix()) });
     }
 
+    queryNames() {
+        $.getJSON("/names/").then((data) => this.state.names = data);
+    }
+
     querySpeed() {
         this.myChart.showLoading();
         $.getJSON("/speed/",
@@ -186,6 +191,10 @@ export default class Dashboard extends React.Component {
         var margin = {};
         var rowMargin = { marginTop: '20px', marginBottom: '20px' };
 
+        var names = [];
+        this.state.names.forEach(function (element) {
+            names.push(<Option key={element._id}>{element._id}</Option>);
+        });
         return (
             <div >
                 <Navbar collapseOnSelect>
@@ -236,10 +245,7 @@ export default class Dashboard extends React.Component {
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>会员</span>
                                     <Select mode="multiple" style={{ width: 200 }}>
-                                        <Option key="张三">张三</Option >
-                                        <Option key="李四">李四</Option >
-                                        <Option key="王五">王五</Option >
-                                        <Option key="赵六">赵六</Option >
+                                        {names}
                                     </Select>
                                 </Col>
                                 <Col sm={3}>

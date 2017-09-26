@@ -20,4 +20,5 @@ from data import views as dataViews
 urlpatterns = [
     url(r'^$', hello),
     url(r'^speed/$', dataViews.speed_query),
+    url(r'^names/$', dataViews.name_query),
 ]

@@ -6,7 +6,6 @@ import json
 
 client = MongoClient('localhost', 27017)
 db = client.rtls
-collection = db.rtls
 
 class JSONResponse(HttpResponse):
     def __init__(self, data, **kwargs):
@@ -14,6 +13,15 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
 
+
+def name_query(request):
+    if request.method == 'GET':
+        result = db.rtls.aggregate([{"$group" : {"_id" : "$name", "number" : {"$sum" : 1}}}])
+        result = list(result)
+        print json.dumps(result).decode("unicode_escape")
+        return JSONResponse(result)
+
+    return HttpResponse(status=404)
 
 
 def speed_query(request):
