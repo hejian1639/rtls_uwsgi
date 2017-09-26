@@ -7,6 +7,17 @@ import { DatePicker, Select, InputNumber } from 'antd_';
 const Option = Select.Option;
 import moment from 'moment-with-locales';
 
+const MAX_DATA_COUNT = 10;
+const DAY = 24 * 60 * 60;
+const BEIJING_TIME = 8 * 60 * 60;
+
+function fixTime(time) {
+    const OFFSET = 8 * 60 * 60;
+    time += OFFSET;
+    time -= time % (24 * 60 * 60);
+    time -= OFFSET;
+    return time;
+}
 
 export default class Dashboard extends React.Component {
     static contextTypes = {
@@ -15,8 +26,8 @@ export default class Dashboard extends React.Component {
 
     constructor(props) {
         super(props);
-        // moment.locale('zh-cn');
-        this.state = { showModal: false, beginDate: moment(), endDate: moment() };
+        moment.locale('zh-cn');
+        this.state = { showModal: false, beginDate: fixTime(moment().unix()), endDate: fixTime(moment().unix()) };
 
         this.option = {
             tooltip: {
@@ -52,19 +63,19 @@ export default class Dashboard extends React.Component {
                     name: '平均值',
                     type: 'bar',
                     stack: '速度',
-                    data: [320, 332, 301, 334, 390, 330, 320]
+                    data: []
                 },
                 {
                     name: '最大值',
                     type: 'bar',
                     stack: '速度',
-                    data: [120, 132, 101, 134, 90, 230, 210]
+                    data: []
                 },
                 {
                     name: '最小值',
                     type: 'bar',
                     stack: '速度',
-                    data: [220, 182, 191, 234, 290, 330, 310]
+                    data: []
                 },
             ]
 
@@ -72,10 +83,11 @@ export default class Dashboard extends React.Component {
         this.initDate();
     }
 
+
     initDate() {
-        var m = this.state.beginDate.clone();
+        var m = moment.unix(this.state.beginDate);
         var data = [m.format('MMMM Do')];
-        for (var i = 0; i < 10; ++i) {
+        for (var i = 0; i < MAX_DATA_COUNT; ++i) {
             data.push(m.add(1, 'days').format('MMMM Do'));
         }
         var xAxis = [
@@ -87,13 +99,53 @@ export default class Dashboard extends React.Component {
         this.option.xAxis = xAxis;
     }
 
+    initData(data) {
+        console.log(data);
+        var series = [
+            {
+                name: '平均值',
+                type: 'bar',
+                stack: '速度',
+                data: []
+            },
+            {
+                name: '最大值',
+                type: 'bar',
+                stack: '速度',
+                data: []
+            },
+            {
+                name: '最小值',
+                type: 'bar',
+                stack: '速度',
+                data: []
+            },
+        ]
+        var beg = this.state.beginDate
+        var timeIndex = []
+        for (var i = 0; i < MAX_DATA_COUNT; ++i, beg += 24 * 60 * 60) {
+            series[0].data.push(0)
+            series[1].data.push(0)
+            series[2].data.push(0)
+            timeIndex[beg] = i;
+        }
+
+        data.forEach(function (element) {
+            series[0].data[timeIndex[element._id]] = element.value.aveSpeed;
+            series[1].data[timeIndex[element._id]] = element.value.minSpeed;
+            series[2].data[timeIndex[element._id]] = element.value.maxSpeed;
+        });
+
+        this.option.series = series;
+    }
+
     componentWillMount() {
         $('#pageLoading').hide();
     }
 
     componentDidMount() {
         this.myChart = ec.init(document.getElementById('chart'));
-        
+
         this.myChart.setOption(this.option);
         // $('#pageLoading').hide();
     }
@@ -106,43 +158,33 @@ export default class Dashboard extends React.Component {
         this.setState({ showModal: false });
     }
 
-
     handleBeginDateChange(value) {
-        this.setState({ beginDate: value });
+        this.setState({ beginDate: fixTime(value.unix()) });
     }
 
     handleEndDateChange(value) {
-        this.setState({ endDate: value });
+        this.setState({ endDate: fixTime(value.unix()) });
     }
 
     querySpeed() {
-        $.get("/speed/", { name: '小李', group: '舞蹈', sex: 'male' }).then(
+        this.myChart.showLoading();
+        $.getJSON("/speed/",
+            { name: '小李', group: '舞蹈', sex: 'male', begTime: this.state.beginDate, endTime: this.state.endDate })
+            .then(
             (data) => {
-                console.log(data);
                 this.close();
 
                 this.initDate();
-                this.myChart.setOption(this.option);
-
-            }
-        );
+                this.initData(data);
+                this.myChart.setOption(this.option, true);
+            }).always(() => {
+                this.myChart.hideLoading();
+            });
     }
 
     render() {
         var margin = {};
         var rowMargin = { marginTop: '20px', marginBottom: '20px' };
-
-        const popover = (
-            <Popover id="modal-popover" title="popover">
-                very popover. such engagement
-            </Popover>
-        );
-        const tooltip = (
-            <Tooltip id="modal-tooltip">
-                wow.
-            </Tooltip>
-        );
-        const dummySentences = ['Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'Donec hendrerit tempor tellus.', 'Donec pretium posuere tellus.', 'Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.', 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.', 'Nulla posuere.', 'Donec vitae dolor.', 'Nullam tristique diam non turpis.', 'Cras placerat accumsan nulla.', 'Nullam rutrum.', 'Nam vestibulum accumsan nisl.'];
 
         return (
             <div >
@@ -181,10 +223,12 @@ export default class Dashboard extends React.Component {
                             <Row className="show-grid" style={{ marginBottom: '30px' }}>
                                 <Col sm={1}>时间：</Col>
                                 <Col sm={3}>
-                                    <span style={{ marginRight: '10px' }}>起始时间</span><DatePicker defaultValue={this.state.beginDate} onChange={this.handleBeginDateChange.bind(this)} />
+                                    <span style={{ marginRight: '10px' }}>起始时间</span>
+                                    <DatePicker defaultValue={moment.unix(this.state.beginDate)} onChange={this.handleBeginDateChange.bind(this)} />
                                 </Col>
                                 <Col sm={3}>
-                                    <span style={{ marginRight: '10px' }}>结束时间</span><DatePicker defaultValue={this.state.endDate} onChange={this.handleEndDateChange.bind(this)} />
+                                    <span style={{ marginRight: '10px' }}>结束时间</span>
+                                    <DatePicker defaultValue={moment.unix(this.state.endDate)} onChange={this.handleEndDateChange.bind(this)} />
                                 </Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
