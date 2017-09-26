@@ -5,7 +5,7 @@ import $ from 'jquery'
 import ec from 'echarts'
 import { DatePicker, Select, InputNumber } from 'antd_';
 const Option = Select.Option;
-import moment from 'moment';
+import moment from 'moment-with-locales';
 
 
 export default class Dashboard extends React.Component {
@@ -15,6 +15,7 @@ export default class Dashboard extends React.Component {
 
     constructor(props) {
         super(props);
+        // moment.locale('zh-cn');
         this.state = { showModal: false, beginDate: moment(), endDate: moment() };
 
         this.option = {
@@ -41,12 +42,6 @@ export default class Dashboard extends React.Component {
                 }
             },
             calculable: true,
-            xAxis: [
-                {
-                    type: 'category',
-                    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-                }
-            ],
             yAxis: [
                 {
                     type: 'value'
@@ -74,19 +69,32 @@ export default class Dashboard extends React.Component {
             ]
 
         }
+        this.initDate();
     }
 
-
+    initDate() {
+        var m = this.state.beginDate.clone();
+        var data = [m.format('MMMM Do')];
+        for (var i = 0; i < 10; ++i) {
+            data.push(m.add(1, 'days').format('MMMM Do'));
+        }
+        var xAxis = [
+            {
+                type: 'category',
+                data: data
+            }
+        ];
+        this.option.xAxis = xAxis;
+    }
 
     componentWillMount() {
         $('#pageLoading').hide();
     }
 
     componentDidMount() {
-        var myChart = ec.init(document.getElementById('chart'));
-
-
-        myChart.setOption(this.option);
+        this.myChart = ec.init(document.getElementById('chart'));
+        
+        this.myChart.setOption(this.option);
         // $('#pageLoading').hide();
     }
 
@@ -112,6 +120,10 @@ export default class Dashboard extends React.Component {
             (data) => {
                 console.log(data);
                 this.close();
+
+                this.initDate();
+                this.myChart.setOption(this.option);
+
             }
         );
     }
