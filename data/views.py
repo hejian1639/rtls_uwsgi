@@ -44,17 +44,17 @@ def speed_query(request):
         endTime = request.GET.get('endTime')
 
         code ="function() {"
-        if(names != None and names != []):
+        if(names and names != []):
             code += "while(true){"
             for name in names:
                 code += "if(this.name == \"" + name + "\")"
                 code += "break;"
             code += "return;"
             code += "}"
-        if(group != None and group != ''):
+        if(group and group != ''):
             code += "if(this.group != \"" + group + "\")"
             code += "return;"
-        if(sex != None and sex != ''):
+        if(sex and sex != ''):
             code += "if(this.sex != \"" + sex + "\")"
             code += "return;"
 

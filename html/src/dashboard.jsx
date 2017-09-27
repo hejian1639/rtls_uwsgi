@@ -199,7 +199,7 @@ export default class Dashboard extends React.Component {
             method: "GET",
             url: "/speed/",
             traditional: true,
-            data: { 'name': this.state.selectedName, group: this.state.selectedGroup, sex: 'male', begTime: this.state.beginDate, endTime: this.state.endDate }
+            data: { 'name': this.state.selectedName, group: this.state.selectedGroup, sex: this.state.selectedSex, begTime: this.state.beginDate, endTime: this.state.endDate }
         }).then((data) => {
             this.close();
 
