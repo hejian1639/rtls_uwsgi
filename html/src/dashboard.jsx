@@ -301,6 +301,9 @@ export default class Dashboard extends React.Component {
                                 </Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
+                                <Col smOffset={4} sm={1}><Button style={{ width: 50 }}>+</Button></Col>
+                            </Row>
+                            <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
                                 <Col sm={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)}>查询速度</Button></Col>
                                 <Col sm={3}><Button bsStyle="primary">查询轨迹</Button></Col>
                                 <Col sm={3}><Button bsStyle="primary">查询热点</Button></Col>
