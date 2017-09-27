@@ -3,11 +3,11 @@ import React from 'react'
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip, ButtonGroup } from 'react-bootstrap';
 import $ from 'jquery'
 import ec from 'echarts'
-import { DatePicker, Select, InputNumber } from 'antd_';
+import { DatePicker, Select, InputNumber } from 'antd';
 const Option = Select.Option;
 import moment from 'moment-with-locales';
 
-const MAX_DATA_COUNT = 10;
+const MAX_DATA_COUNT = 20;
 const DAY = 24 * 60 * 60;
 const BEIJING_TIME = 8 * 60 * 60;
 
@@ -29,7 +29,7 @@ export default class Dashboard extends React.Component {
         moment.locale('zh-cn');
         this.state = {
             showModal: false,
-            beginDate: fixTime(moment().unix()),
+            beginDate: fixTime(moment('20170904').unix()),
             endDate: fixTime(moment().unix()),
             names: [],
             groups: [],
@@ -156,9 +156,9 @@ export default class Dashboard extends React.Component {
 
     componentDidMount() {
         this.myChart = ec.init(document.getElementById('chart'));
-
         this.myChart.setOption(this.option);
-        // $('#pageLoading').hide();
+
+        this.querySpeed()
     }
 
     open() {
