@@ -188,7 +188,7 @@ export default class Dashboard extends React.Component {
     handleSexSelect(value) {
         this.setState({ selectedSex: value })
     }
-    
+
     queryNames() {
         $.getJSON("/names/").then((data) => this.state.names = data);
     }
@@ -263,24 +263,24 @@ export default class Dashboard extends React.Component {
                                 <Col sm={1}>时间：</Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>起始时间</span>
-                                    <DatePicker defaultValue={moment.unix(this.state.beginDate)} onChange={this.handleBeginDateChange.bind(this)} />
+                                    <DatePicker defaultValue={moment.unix(this.state.beginDate)} allowClear={false} onChange={this.handleBeginDateChange.bind(this)} />
                                 </Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>结束时间</span>
-                                    <DatePicker defaultValue={moment.unix(this.state.endDate)} onChange={this.handleEndDateChange.bind(this)} />
+                                    <DatePicker defaultValue={moment.unix(this.state.endDate)} allowClear={false} onChange={this.handleEndDateChange.bind(this)} />
                                 </Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
                                 <Col sm={1}>查询条件：</Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>会员</span>
-                                    <Select mode="multiple" defaultValue={this.state.selectedName} onChange={this.handleNameSelect.bind(this)} style={{ width: 200 }}>
+                                    <Select mode="multiple" defaultValue={this.state.selectedName} allowClear={true} onChange={this.handleNameSelect.bind(this)} style={{ width: 200 }}>
                                         {names}
                                     </Select>
                                 </Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>群组</span>
-                                    <Select defaultValue={this.state.selectedGroup} onChange={this.handleGroupSelect.bind(this)} style={{ width: 200 }}>
+                                    <Select defaultValue={this.state.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this)} style={{ width: 200 }}>
                                         {groups}
                                     </Select>
                                 </Col>
@@ -288,13 +288,13 @@ export default class Dashboard extends React.Component {
                             <Row className="show-grid" style={{ marginTop: '10px', marginBottom: '30px' }}>
                                 <Col smOffset={1} sm={3}>
                                     <span style={{ marginRight: '10px' }}>年龄</span>
-                                    <InputNumber min={1} max={100} />
+                                    <InputNumber defaultValue={1} min={1} max={100} />
                                     <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
-                                    <InputNumber min={1} max={100} />
+                                    <InputNumber defaultValue={100} min={1} max={100} />
                                 </Col>
                                 <Col sm={2}>
                                     <span style={{ marginRight: '10px' }}>性别</span>
-                                    <Select defaultValue={this.state.selectedSex} onChange={this.handleSexSelect.bind(this)} style={{ width: 100 }}>
+                                    <Select defaultValue={this.state.selectedSex} allowClear={true} onChange={this.handleSexSelect.bind(this)} style={{ width: 100 }}>
                                         <Option key="male">男</Option >
                                         <Option key="female">女</Option >
                                     </Select>
