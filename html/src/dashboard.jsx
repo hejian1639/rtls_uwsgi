@@ -34,7 +34,8 @@ export default class Dashboard extends React.Component {
             names: [],
             groups: [],
             selectedName: [],
-            selectedGroup: ''
+            selectedGroup: '',
+            selectedSex: ''
         };
         $.getJSON("/names/").then((data) => this.setState({ names: data }));
         $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
@@ -184,24 +185,30 @@ export default class Dashboard extends React.Component {
         this.setState({ selectedGroup: value })
     }
 
+    handleSexSelect(value) {
+        this.setState({ selectedSex: value })
+    }
+    
     queryNames() {
         $.getJSON("/names/").then((data) => this.state.names = data);
     }
 
     querySpeed() {
         this.myChart.showLoading();
-        $.getJSON("/speed/",
-            { name: '小李', group: '舞蹈', sex: 'male', begTime: this.state.beginDate, endTime: this.state.endDate })
-            .then(
-            (data) => {
-                this.close();
+        $.ajax({
+            method: "GET",
+            url: "/speed/",
+            traditional: true,
+            data: { 'name': this.state.selectedName, group: this.state.selectedGroup, sex: 'male', begTime: this.state.beginDate, endTime: this.state.endDate }
+        }).then((data) => {
+            this.close();
 
-                this.initDate();
-                this.initData(data);
-                this.myChart.setOption(this.option, true);
-            }).always(() => {
-                this.myChart.hideLoading();
-            });
+            this.initDate();
+            this.initData(data);
+            this.myChart.setOption(this.option, true);
+        }).always(() => {
+            this.myChart.hideLoading();
+        });
     }
 
     render() {
@@ -287,7 +294,7 @@ export default class Dashboard extends React.Component {
                                 </Col>
                                 <Col sm={2}>
                                     <span style={{ marginRight: '10px' }}>性别</span>
-                                    <Select style={{ width: 100 }}>
+                                    <Select defaultValue={this.state.selectedSex} onChange={this.handleSexSelect.bind(this)} style={{ width: 100 }}>
                                         <Option key="male">男</Option >
                                         <Option key="female">女</Option >
                                     </Select>

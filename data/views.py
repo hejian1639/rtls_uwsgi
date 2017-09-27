@@ -37,20 +37,24 @@ def speed_query(request):
     TIME_OFFSET = 8*60*60
 
     if request.method == 'GET':
-        name = request.GET.get('name')
+        names = request.GET.getlist('name',[])
         group = request.GET.get('group')
         sex = request.GET.get('sex')
         begTime = request.GET.get('begTime')
         endTime = request.GET.get('endTime')
 
         code ="function() {"
-        if(name != None):
-            code += "if(this.name != \"" + name + "\")"
+        if(names != None and names != []):
+            code += "while(true){"
+            for name in names:
+                code += "if(this.name == \"" + name + "\")"
+                code += "break;"
             code += "return;"
-        if(group != None):
+            code += "}"
+        if(group != None and group != ''):
             code += "if(this.group != \"" + group + "\")"
             code += "return;"
-        if(sex != None):
+        if(sex != None and sex != ''):
             code += "if(this.sex != \"" + sex + "\")"
             code += "return;"
 
@@ -65,7 +69,7 @@ def speed_query(request):
 
         code += "emit(time, {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
         code += "}"
-        # print code
+        print code
         map = Code(code)
 
         code ="function(key, values) {"
