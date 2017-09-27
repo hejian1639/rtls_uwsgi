@@ -116,19 +116,19 @@ export default class Dashboard extends React.Component {
             {
                 name: '平均值',
                 type: 'bar',
-                stack: '速度',
+                stack: 'average',
                 data: []
             },
             {
                 name: '最大值',
                 type: 'bar',
-                stack: '速度',
+                stack: 'max',
                 data: []
             },
             {
                 name: '最小值',
                 type: 'bar',
-                stack: '速度',
+                stack: 'min',
                 data: []
             },
         ]
