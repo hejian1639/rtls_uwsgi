@@ -29,7 +29,7 @@ export default class Dashboard extends React.Component {
         moment.locale('zh-cn');
         this.state = {
             showModal: false,
-            beginDate: fixTime(moment('20170904').unix()),
+            beginDate: fixTime(moment('20170904', "YYYYMMDD").unix()),
             endDate: fixTime(moment().unix()),
             names: [],
             groups: [],
