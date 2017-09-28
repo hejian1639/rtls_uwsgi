@@ -42,7 +42,7 @@ export default class Dashboard extends React.Component {
             endDate: fixTime(moment().unix()),
             names: [],
             groups: [],
-            searchOption: new SearchOption()
+            searchOption: [new SearchOption()]
         };
         $.getJSON("/names/").then((data) => this.setState({ names: data }));
         $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
@@ -119,41 +119,46 @@ export default class Dashboard extends React.Component {
 
     initData(data) {
         console.log(data);
-        var series = [
-            {
+        var series = [];
+        var beg = this.state.beginDate
+        var timeIndex = []
+        for (var i = 0; i < MAX_DATA_COUNT; ++i, beg += 24 * 60 * 60) {
+            timeIndex[beg] = i;
+        }
+
+        for (var i = 0; i < data.length; ++i) {
+            series.push({
                 name: '平均值',
                 type: 'bar',
                 stack: 'average',
                 data: []
-            },
-            {
+            });
+            series.push({
                 name: '最大值',
                 type: 'bar',
                 stack: 'max',
                 data: []
-            },
-            {
+            });
+            series.push({
                 name: '最小值',
                 type: 'bar',
                 stack: 'min',
                 data: []
-            },
-        ]
-        var beg = this.state.beginDate
-        var timeIndex = []
-        for (var i = 0; i < MAX_DATA_COUNT; ++i, beg += 24 * 60 * 60) {
-            series[0].data.push(0)
-            series[1].data.push(0)
-            series[2].data.push(0)
-            timeIndex[beg] = i;
+            });
+            for (var j = 0; j < MAX_DATA_COUNT; ++j) {
+                series[3 * i + 0].data.push(0)
+                series[3 * i + 1].data.push(0)
+                series[3 * i + 2].data.push(0)
+            }
+
+            data[i].forEach(function (element) {
+                series[3 * i + 0].data[timeIndex[element._id]] = element.value.aveSpeed;
+                series[3 * i + 1].data[timeIndex[element._id]] = element.value.minSpeed;
+                series[3 * i + 2].data[timeIndex[element._id]] = element.value.maxSpeed;
+            });
+
+
         }
-
-        data.forEach(function (element) {
-            series[0].data[timeIndex[element._id]] = element.value.aveSpeed;
-            series[1].data[timeIndex[element._id]] = element.value.minSpeed;
-            series[2].data[timeIndex[element._id]] = element.value.maxSpeed;
-        });
-
         this.option.series = series;
     }
 
@@ -184,22 +189,24 @@ export default class Dashboard extends React.Component {
         this.setState({ endDate: fixTime(value.unix()) });
     }
 
-    handleNameSelect(value) {
-        this.state.searchOption.selectedName = value;
+    handleNameSelect(searchOption, value) {
+        searchOption.selectedName = value;
         this.forceUpdate();
-        // this.setState({ selectedName: value })
     }
 
-    handleGroupSelect(value) {
-        this.state.searchOption.selectedGroup = value;
+    handleGroupSelect(searchOption, value) {
+        searchOption.selectedGroup = value;
         this.forceUpdate();
-        // this.setState({ selectedGroup: value })
     }
 
-    handleSexSelect(value) {
-        this.state.searchOption.selectedSex = value;
+    handleSexSelect(searchOption, value) {
+        searchOption.selectedSex = value;
         this.forceUpdate();
-        // this.setState({ selectedSex: value })
+    }
+
+    handleAddOption() {
+        this.state.searchOption.push(new SearchOption());
+        this.forceUpdate();
     }
 
     queryNames() {
@@ -208,11 +215,16 @@ export default class Dashboard extends React.Component {
 
     querySpeed() {
         this.myChart.showLoading();
+        var searchOptions = [];
+        this.state.searchOption.forEach(function (element) {
+            searchOptions.push({ name: element.selectedName, group: element.selectedGroup, sex: element.selectedSex });
+        });
+
         $.ajax({
             method: "GET",
             url: "/speed/",
             traditional: true,
-            data: { 'name': this.state.selectedName, group: this.state.selectedGroup, sex: this.state.selectedSex, begTime: this.state.beginDate, endTime: this.state.endDate }
+            data: { searchOptions: JSON.stringify(searchOptions), begTime: this.state.beginDate, endTime: this.state.endDate }
         }).then((data) => {
             this.close();
 
@@ -222,6 +234,50 @@ export default class Dashboard extends React.Component {
         }).always(() => {
             this.myChart.hideLoading();
         });
+    }
+
+    generateSearchOption(names, groups) {
+        var searchOptions = [];
+        var length = this.state.searchOption.length;
+        for (var i = 0; i < length; ++i) {
+            var element = this.state.searchOption[i];
+            searchOptions.push(
+                <Row key={i * 3} className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
+                    {(i == 0) ? (<Col sm={1}>查询条件：</Col>) : (<Col sm={1}></Col>)}
+                    <Col sm={3}>
+                        <span style={{ marginRight: '10px' }}>会员</span>
+                        <Select mode="multiple" defaultValue={element.selectedName} allowClear={true} onChange={this.handleNameSelect.bind(this, element)} style={{ width: 200 }}>
+                            {names}
+                        </Select>
+                    </Col>
+                    <Col sm={3}>
+                        <span style={{ marginRight: '10px' }}>群组</span>
+                        <Select defaultValue={element.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this, element)} style={{ width: 200 }}>
+                            {groups}
+                        </Select>
+                    </Col>
+                </Row>
+            );
+            searchOptions.push(
+                <Row key={i * 3 + 1} className="show-grid" style={{ marginTop: '10px', marginBottom: '30px' }}>
+                    <Col smOffset={1} sm={3}>
+                        <span style={{ marginRight: '10px' }}>年龄</span>
+                        <InputNumber defaultValue={1} min={1} max={100} />
+                        <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
+                        <InputNumber defaultValue={100} min={1} max={100} />
+                    </Col>
+                    <Col sm={2}>
+                        <span style={{ marginRight: '10px' }}>性别</span>
+                        <Select defaultValue={element.selectedSex} allowClear={true} onChange={this.handleSexSelect.bind(this, element)} style={{ width: 100 }}>
+                            <Option key="male">男</Option >
+                            <Option key="female">女</Option >
+                        </Select>
+                    </Col>
+                </Row>
+            );
+            searchOptions.push(<hr key={i * 3 + 2} style={{ width: '850px' }} />)
+        }
+        return searchOptions;
     }
 
     render() {
@@ -283,38 +339,9 @@ export default class Dashboard extends React.Component {
                                     <DatePicker defaultValue={moment.unix(this.state.endDate)} allowClear={false} onChange={this.handleEndDateChange.bind(this)} />
                                 </Col>
                             </Row>
+                            {this.generateSearchOption(names, groups)}
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-                                <Col sm={1}>查询条件：</Col>
-                                <Col sm={3}>
-                                    <span style={{ marginRight: '10px' }}>会员</span>
-                                    <Select mode="multiple" defaultValue={this.state.searchOption.selectedName} allowClear={true} onChange={this.handleNameSelect.bind(this)} style={{ width: 200 }}>
-                                        {names}
-                                    </Select>
-                                </Col>
-                                <Col sm={3}>
-                                    <span style={{ marginRight: '10px' }}>群组</span>
-                                    <Select defaultValue={this.state.searchOption.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this)} style={{ width: 200 }}>
-                                        {groups}
-                                    </Select>
-                                </Col>
-                            </Row>
-                            <Row className="show-grid" style={{ marginTop: '10px', marginBottom: '30px' }}>
-                                <Col smOffset={1} sm={3}>
-                                    <span style={{ marginRight: '10px' }}>年龄</span>
-                                    <InputNumber defaultValue={1} min={1} max={100} />
-                                    <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
-                                    <InputNumber defaultValue={100} min={1} max={100} />
-                                </Col>
-                                <Col sm={2}>
-                                    <span style={{ marginRight: '10px' }}>性别</span>
-                                    <Select defaultValue={this.state.searchOption.selectedSex} allowClear={true} onChange={this.handleSexSelect.bind(this)} style={{ width: 100 }}>
-                                        <Option key="male">男</Option >
-                                        <Option key="female">女</Option >
-                                    </Select>
-                                </Col>
-                            </Row>
-                            <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-                                <Col smOffset={4} sm={1}><Button style={{ width: 50 }}>+</Button></Col>
+                                <Col smOffset={4} sm={1}><Button onClick={this.handleAddOption.bind(this)} style={{ width: 50 }}>+</Button></Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
                                 <Col sm={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)}>查询速度</Button></Col>
