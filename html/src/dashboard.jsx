@@ -19,6 +19,15 @@ function fixTime(time) {
     return time;
 }
 
+class SearchOption {
+    constructor() {
+        this.selectedName = [];
+        this.selectedGroup = '';
+        this.selectedSex = '';
+
+    }
+}
+
 export default class Dashboard extends React.Component {
     static contextTypes = {
         router: React.PropTypes.object.isRequired,
@@ -33,9 +42,7 @@ export default class Dashboard extends React.Component {
             endDate: fixTime(moment().unix()),
             names: [],
             groups: [],
-            selectedName: [],
-            selectedGroup: '',
-            selectedSex: ''
+            searchOption: new SearchOption()
         };
         $.getJSON("/names/").then((data) => this.setState({ names: data }));
         $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
@@ -178,15 +185,21 @@ export default class Dashboard extends React.Component {
     }
 
     handleNameSelect(value) {
-        this.setState({ selectedName: value })
+        this.state.searchOption.selectedName = value;
+        this.forceUpdate();
+        // this.setState({ selectedName: value })
     }
 
     handleGroupSelect(value) {
-        this.setState({ selectedGroup: value })
+        this.state.searchOption.selectedGroup = value;
+        this.forceUpdate();
+        // this.setState({ selectedGroup: value })
     }
 
     handleSexSelect(value) {
-        this.setState({ selectedSex: value })
+        this.state.searchOption.selectedSex = value;
+        this.forceUpdate();
+        // this.setState({ selectedSex: value })
     }
 
     queryNames() {
@@ -274,13 +287,13 @@ export default class Dashboard extends React.Component {
                                 <Col sm={1}>查询条件：</Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>会员</span>
-                                    <Select mode="multiple" defaultValue={this.state.selectedName} allowClear={true} onChange={this.handleNameSelect.bind(this)} style={{ width: 200 }}>
+                                    <Select mode="multiple" defaultValue={this.state.searchOption.selectedName} allowClear={true} onChange={this.handleNameSelect.bind(this)} style={{ width: 200 }}>
                                         {names}
                                     </Select>
                                 </Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>群组</span>
-                                    <Select defaultValue={this.state.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this)} style={{ width: 200 }}>
+                                    <Select defaultValue={this.state.searchOption.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this)} style={{ width: 200 }}>
                                         {groups}
                                     </Select>
                                 </Col>
@@ -294,7 +307,7 @@ export default class Dashboard extends React.Component {
                                 </Col>
                                 <Col sm={2}>
                                     <span style={{ marginRight: '10px' }}>性别</span>
-                                    <Select defaultValue={this.state.selectedSex} allowClear={true} onChange={this.handleSexSelect.bind(this)} style={{ width: 100 }}>
+                                    <Select defaultValue={this.state.searchOption.selectedSex} allowClear={true} onChange={this.handleSexSelect.bind(this)} style={{ width: 100 }}>
                                         <Option key="male">男</Option >
                                         <Option key="female">女</Option >
                                     </Select>
