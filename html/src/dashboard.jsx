@@ -130,19 +130,19 @@ export default class Dashboard extends React.Component {
             series.push({
                 name: '平均值',
                 type: 'bar',
-                stack: 'average',
+                stack: 'average' + i,
                 data: []
             });
             series.push({
                 name: '最大值',
                 type: 'bar',
-                stack: 'max',
+                stack: 'max' + i,
                 data: []
             });
             series.push({
                 name: '最小值',
                 type: 'bar',
-                stack: 'min',
+                stack: 'min' + i,
                 data: []
             });
             for (var j = 0; j < MAX_DATA_COUNT; ++j) {
@@ -209,6 +209,11 @@ export default class Dashboard extends React.Component {
         this.forceUpdate();
     }
 
+    handleDeleteOption(i) {
+        this.state.searchOption.splice(i, 1);
+        this.forceUpdate();
+    }
+
     queryNames() {
         $.getJSON("/names/").then((data) => this.state.names = data);
     }
@@ -255,6 +260,9 @@ export default class Dashboard extends React.Component {
                         <Select defaultValue={element.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this, element)} style={{ width: 200 }}>
                             {groups}
                         </Select>
+                    </Col>
+                    <Col sm={1}>
+                        <Button onClick={this.handleDeleteOption.bind(this, i)} >-</Button>
                     </Col>
                 </Row>
             );
@@ -341,7 +349,9 @@ export default class Dashboard extends React.Component {
                             </Row>
                             {this.generateSearchOption(names, groups)}
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-                                <Col smOffset={4} sm={1}><Button onClick={this.handleAddOption.bind(this)} style={{ width: 50 }}>+</Button></Col>
+                                <Col smOffset={4} sm={1}>
+                                    <Button onClick={this.handleAddOption.bind(this)} style={{ width: 50 }}>+</Button>
+                                </Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
                                 <Col sm={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)}>查询速度</Button></Col>
