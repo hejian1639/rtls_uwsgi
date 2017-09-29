@@ -4,8 +4,9 @@ import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Mo
 import $ from 'jquery'
 import ec from 'echarts'
 import { DatePicker, Select, InputNumber } from 'antd';
+
 const Option = Select.Option;
-import moment from 'moment-with-locales';
+import moment from 'moment';
 
 const MAX_DATA_COUNT = 20;
 const DAY = 24 * 60 * 60;

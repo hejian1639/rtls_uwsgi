@@ -181,7 +181,7 @@ module.exports = {
                     options: {
                         cacheDirectory: true,
                         presets: ['es2015', 'stage-0', 'react'],
-                        plugins: ["transform-decorators-legacy"]
+                        plugins: ["transform-decorators-legacy", ["import", { libraryName: "antd", style: "css" }]]
                     }
                 }
             },
@@ -191,9 +191,9 @@ module.exports = {
                     'style-loader',
                     {
                         loader: 'css-loader',
-                        options: {
-                            modules: true,
-                        },
+                        // options: {
+                        //     modules: true,
+                        // },
                     },
                     {
                         loader: 'postcss-loader',
