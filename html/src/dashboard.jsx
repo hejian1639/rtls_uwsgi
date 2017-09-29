@@ -349,7 +349,7 @@ export default class Dashboard extends React.Component {
                                 <Button bsStyle="primary" style={margin} onClick={this.open.bind(this)}>查询</Button>
                             </NavItem>
                         </Nav>
-                        <Nav bsStyle="pills" activeKey={this.state.activeKey} onSelect={this.handleValueSelect.bind(this)}>
+                        <Nav bsStyle="pills" activeKey={this.state.activeKey} onSelect={this.handleValueSelect.bind(this)} style={{ marginTop: '5px' }}>
                             <NavItem eventKey='max'>最大值</NavItem>
                             <NavItem eventKey='min'>最小值</NavItem>
                             <NavItem eventKey='average'>平均值</NavItem>
