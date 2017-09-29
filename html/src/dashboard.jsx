@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip, ButtonGroup } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Button, Modal, OverlayTrigger, Popover, Tooltip, ButtonGroup, ToggleButtonGroup, ToggleButton, ButtonToolbar } from 'react-bootstrap';
 import $ from 'jquery'
 import ec from 'echarts'
 import { DatePicker, Select, InputNumber } from 'antd';
@@ -43,7 +43,8 @@ export default class Dashboard extends React.Component {
             endDate: fixTime(moment().unix()),
             names: [],
             groups: [],
-            searchOption: [new SearchOption()]
+            searchOption: [new SearchOption()],
+            activeKey: 'max'
         };
         $.getJSON("/names/").then((data) => this.setState({ names: data }));
         $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
@@ -55,9 +56,9 @@ export default class Dashboard extends React.Component {
                     type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 }
             },
-            legend: {
-                data: ['平均值', '最大值', '最小值']
-            },
+            // legend: {
+            //     data: ['平均值', '最大值', '最小值']
+            // },
             toolbox: {
                 show: true,
                 orient: 'vertical',
@@ -120,7 +121,9 @@ export default class Dashboard extends React.Component {
 
     initData(data) {
         console.log(data);
-        var series = [];
+        this.maxSeries = [];
+        this.minSeries = [];
+        this.aveSeries = [];
         var beg = this.state.beginDate
         var timeIndex = []
         for (var i = 0; i < MAX_DATA_COUNT; ++i, beg += 24 * 60 * 60) {
@@ -128,39 +131,51 @@ export default class Dashboard extends React.Component {
         }
 
         for (var i = 0; i < data.length; ++i) {
-            series.push({
-                name: '平均值',
+            this.aveSeries.push({
+                name: i.toString(),
                 type: 'bar',
                 stack: 'average' + i,
                 data: []
             });
-            series.push({
-                name: '最大值',
+            this.maxSeries.push({
+                name: i.toString(),
                 type: 'bar',
                 stack: 'max' + i,
                 data: []
             });
-            series.push({
-                name: '最小值',
+            this.minSeries.push({
+                name: i.toString(),
                 type: 'bar',
                 stack: 'min' + i,
                 data: []
             });
             for (var j = 0; j < MAX_DATA_COUNT; ++j) {
-                series[3 * i + 0].data.push(0)
-                series[3 * i + 1].data.push(0)
-                series[3 * i + 2].data.push(0)
+                this.aveSeries[i].data.push(0)
+                this.maxSeries[i].data.push(0)
+                this.minSeries[i].data.push(0)
             }
 
-            data[i].forEach(function (element) {
-                series[3 * i + 0].data[timeIndex[element._id]] = element.value.aveSpeed;
-                series[3 * i + 1].data[timeIndex[element._id]] = element.value.minSpeed;
-                series[3 * i + 2].data[timeIndex[element._id]] = element.value.maxSpeed;
+            data[i].forEach((element) => {
+                this.aveSeries[i].data[timeIndex[element._id]] = element.value.aveSpeed;
+                this.minSeries[i].data[timeIndex[element._id]] = element.value.minSpeed;
+                this.maxSeries[i].data[timeIndex[element._id]] = element.value.maxSpeed;
             });
 
 
         }
-        this.option.series = series;
+
+        switch (this.state.activeKey) {
+            case 'max':
+                this.option.series = this.maxSeries;
+                break;
+            case 'min':
+                this.option.series = this.minSeries;
+                break;
+            case 'average':
+                this.option.series = this.aveSeries;
+                break;
+        }
+
     }
 
     componentWillMount() {
@@ -213,6 +228,23 @@ export default class Dashboard extends React.Component {
     handleDeleteOption(i) {
         this.state.searchOption.splice(i, 1);
         this.forceUpdate();
+    }
+
+    handleValueSelect(activeKey) {
+        this.setState({ activeKey: activeKey });
+        switch (activeKey) {
+            case 'max':
+                this.option.series = this.maxSeries;
+                break;
+            case 'min':
+                this.option.series = this.minSeries;
+                break;
+            case 'average':
+                this.option.series = this.aveSeries;
+                break;
+        }
+        this.myChart.setOption(this.option, true);
+
     }
 
     queryNames() {
@@ -317,6 +349,12 @@ export default class Dashboard extends React.Component {
                                 <Button bsStyle="primary" style={margin} onClick={this.open.bind(this)}>查询</Button>
                             </NavItem>
                         </Nav>
+                        <Nav bsStyle="pills" activeKey={this.state.activeKey} onSelect={this.handleValueSelect.bind(this)}>
+                            <NavItem eventKey='max'>最大值</NavItem>
+                            <NavItem eventKey='min'>最小值</NavItem>
+                            <NavItem eventKey='average'>平均值</NavItem>
+                        </Nav>
+
                         <Nav pullRight>
                             <NavItem>
                                 <ButtonGroup>
@@ -325,7 +363,6 @@ export default class Dashboard extends React.Component {
                                     <Button>日</Button>
                                 </ButtonGroup>
                             </NavItem>
-
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
