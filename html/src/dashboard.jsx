@@ -365,14 +365,10 @@ export default class Dashboard extends React.Component {
                             <NavItem eventKey='average'>平均值</NavItem>
                         </Nav>
 
-                        <Nav pullRight>
-                            <NavItem>
-                                <ButtonGroup>
-                                    <Button>年</Button>
-                                    <Button>月</Button>
-                                    <Button>日</Button>
-                                </ButtonGroup>
-                            </NavItem>
+                        <Nav pullRight bsStyle="pills" activeKey='year' style={{ marginTop: '5px' }}>
+                            <NavItem eventKey='year'>年</NavItem>
+                            <NavItem eventKey='month'>月</NavItem>
+                            <NavItem eventKey='day'>日</NavItem>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
