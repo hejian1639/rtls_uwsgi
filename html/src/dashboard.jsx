@@ -27,7 +27,7 @@ class SearchOption {
         this.selectedSex = '';
         this.minAge = 1;
         this.maxAge = 100;
-        
+
     }
 }
 
@@ -131,22 +131,25 @@ export default class Dashboard extends React.Component {
         for (var i = 0; i < MAX_DATA_COUNT; ++i, beg += 24 * 60 * 60) {
             timeIndex[beg] = i;
         }
+        this.option.legend = {
+            data: []
+        };
 
         for (var i = 0; i < data.length; ++i) {
             this.aveSeries.push({
-                name: i.toString(),
+                name: '条件' + i,
                 type: 'bar',
                 stack: 'average' + i,
                 data: []
             });
             this.maxSeries.push({
-                name: i.toString(),
+                name: '条件' + i,
                 type: 'bar',
                 stack: 'max' + i,
                 data: []
             });
             this.minSeries.push({
-                name: i.toString(),
+                name: '条件' + i,
                 type: 'bar',
                 stack: 'min' + i,
                 data: []
@@ -163,6 +166,7 @@ export default class Dashboard extends React.Component {
                 this.maxSeries[i].data[timeIndex[element._id]] = element.value.maxSpeed;
             });
 
+            this.option.legend.data.push('条件' + i);
 
         }
 
@@ -313,9 +317,9 @@ export default class Dashboard extends React.Component {
                 <Row key={i * 3 + 1} className="show-grid" style={{ marginTop: '10px', marginBottom: '30px' }}>
                     <Col smOffset={1} sm={3}>
                         <span style={{ marginRight: '10px' }}>年龄</span>
-                        <InputNumber defaultValue={element.minAge} min={1} max={100} onChange={this.setMinAge.bind(this, element)}/>
+                        <InputNumber defaultValue={element.minAge} min={1} max={100} onChange={this.setMinAge.bind(this, element)} />
                         <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
-                        <InputNumber defaultValue={element.maxAge} min={1} max={100} onChange={this.setMaxAge.bind(this, element)}/>
+                        <InputNumber defaultValue={element.maxAge} min={1} max={100} onChange={this.setMaxAge.bind(this, element)} />
                     </Col>
                     <Col sm={2}>
                         <span style={{ marginRight: '10px' }}>性别</span>
