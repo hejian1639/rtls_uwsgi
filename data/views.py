@@ -32,7 +32,7 @@ def group_query(request):
 
     return HttpResponse(status=404)
 
-def speed_query_(begTime, endTime, names, group, sex):
+def speed_query_(begTime, endTime, names, group, sex, minAge, maxAge):
     DAY = 24*60*60
     TIME_OFFSET = 8*60*60
 
@@ -49,6 +49,14 @@ def speed_query_(begTime, endTime, names, group, sex):
         code += "return;"
     if(sex and sex != ''):
         code += "if(this.sex != \"" + sex + "\")"
+        code += "return;"
+
+    if(minAge and minAge != ''):
+        code += "if(this.age < " + str(minAge) + ")"
+        code += "return;"
+
+    if(maxAge and maxAge != ''):
+        code += "if(this.age > " + str(maxAge) + ")"
         code += "return;"
 
     code += "if(this.time < " + begTime + ")"
@@ -108,7 +116,7 @@ def speed_query(request):
         ret = []
         for option in json.loads(searchOptions):
             print option
-            ret.append(speed_query_(begTime, endTime, option['name'], option['group'], option['sex']))
+            ret.append(speed_query_(begTime, endTime, option['name'], option['group'], option['sex'], option['minAge'], option['maxAge'] ))
 
         return JSONResponse(ret)
 

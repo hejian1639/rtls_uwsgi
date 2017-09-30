@@ -25,7 +25,9 @@ class SearchOption {
         this.selectedName = [];
         this.selectedGroup = '';
         this.selectedSex = '';
-
+        this.minAge = 1;
+        this.maxAge = 100;
+        
     }
 }
 
@@ -219,6 +221,14 @@ export default class Dashboard extends React.Component {
         searchOption.selectedSex = value;
         this.forceUpdate();
     }
+    setMinAge(searchOption, value) {
+        searchOption.minAge = value;
+        this.forceUpdate();
+    }
+    setMaxAge(searchOption, value) {
+        searchOption.maxAge = value;
+        this.forceUpdate();
+    }
 
     handleAddOption() {
         this.state.searchOption.push(new SearchOption());
@@ -255,7 +265,7 @@ export default class Dashboard extends React.Component {
         this.myChart.showLoading();
         var searchOptions = [];
         this.state.searchOption.forEach(function (element) {
-            searchOptions.push({ name: element.selectedName, group: element.selectedGroup, sex: element.selectedSex });
+            searchOptions.push({ name: element.selectedName, group: element.selectedGroup, sex: element.selectedSex, minAge: element.minAge, maxAge: element.maxAge });
         });
 
         $.ajax({
@@ -303,9 +313,9 @@ export default class Dashboard extends React.Component {
                 <Row key={i * 3 + 1} className="show-grid" style={{ marginTop: '10px', marginBottom: '30px' }}>
                     <Col smOffset={1} sm={3}>
                         <span style={{ marginRight: '10px' }}>年龄</span>
-                        <InputNumber defaultValue={1} min={1} max={100} />
+                        <InputNumber defaultValue={element.minAge} min={1} max={100} onChange={this.setMinAge.bind(this, element)}/>
                         <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
-                        <InputNumber defaultValue={100} min={1} max={100} />
+                        <InputNumber defaultValue={element.maxAge} min={1} max={100} onChange={this.setMaxAge.bind(this, element)}/>
                     </Col>
                     <Col sm={2}>
                         <span style={{ marginRight: '10px' }}>性别</span>
