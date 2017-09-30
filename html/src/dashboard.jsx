@@ -58,9 +58,10 @@ export default class Dashboard extends React.Component {
                     type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 }
             },
-            // legend: {
-            //     data: ['平均值', '最大值', '最小值']
-            // },
+            dataZoom: {
+                show: true,
+                start: 0,
+            },
             toolbox: {
                 show: true,
                 orient: 'vertical',
