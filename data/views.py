@@ -7,6 +7,10 @@ import json
 client = MongoClient('localhost', 27017)
 db = client.rtls
 
+TIME_TYPE_DAY = 1
+TIME_TYPE_MONTH = 2
+TIME_TYPE_YEAR = 3
+
 class JSONResponse(HttpResponse):
     def __init__(self, data, **kwargs):
         content = JSONRenderer().render(data)
@@ -32,30 +36,30 @@ def group_query(request):
 
     return HttpResponse(status=404)
 
-def speed_query_(begTime, endTime, names, group, sex, minAge, maxAge):
+def speed_query_(begTime, endTime, timeType, names, group, sex, minAge, maxAge):
     DAY = 24*60*60
     TIME_OFFSET = 8*60*60
 
     code ="function() {"
-    if(names and names != []):
+    if names and names != []:
         code += "while(true){"
         for name in names:
             code += "if(this.name == \"" + name + "\")"
             code += "break;"
         code += "return;"
         code += "}"
-    if(group and group != ''):
+    if group and group != '':
         code += "if(this.group != \"" + group + "\")"
         code += "return;"
-    if(sex and sex != ''):
+    if sex and sex != '':
         code += "if(this.sex != \"" + sex + "\")"
         code += "return;"
 
-    if(minAge and minAge != ''):
+    if minAge and minAge != '':
         code += "if(this.age < " + str(minAge) + ")"
         code += "return;"
 
-    if(maxAge and maxAge != ''):
+    if maxAge and maxAge != '':
         code += "if(this.age > " + str(maxAge) + ")"
         code += "return;"
 
@@ -64,9 +68,16 @@ def speed_query_(begTime, endTime, names, group, sex, minAge, maxAge):
     code += "if(this.time > " + endTime + ")"
     code += "return;"
 
-    code += "var time = this.time + " + str(TIME_OFFSET) + ";"
-    code += "time -= time%"+str(DAY)+";"
-    code += "time -= "+str(TIME_OFFSET)+";"
+    code += "var date = new Date(this.time*1000);"
+    if timeType == TIME_TYPE_DAY:
+        code += "var time = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());"
+    elif timeType == TIME_TYPE_MONTH:
+        code += "var time = Date.UTC(date.getFullYear(), date.getMonth());"
+    elif timeType == TIME_TYPE_YEAR:
+        code += "var time = Date.UTC(date.getFullYear(), 0);"
+
+    code += "time /= 1000;"
+    code += "time -="+ str(TIME_OFFSET)+";"
 
     code += "emit(time, {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
     code += "}"
@@ -110,13 +121,16 @@ def speed_query(request):
         begTime = request.GET.get('begTime')
         endTime = request.GET.get('endTime')
 
+        timeType = request.GET.get('timeType')
+        timeType = json.loads(timeType)
+
         searchOptions = request.GET.get('searchOptions')
         print searchOptions
 
         ret = []
         for option in json.loads(searchOptions):
             print option
-            ret.append(speed_query_(begTime, endTime, option['name'], option['group'], option['sex'], option['minAge'], option['maxAge'] ))
+            ret.append(speed_query_(begTime, endTime, timeType, option['name'], option['group'], option['sex'], option['minAge'], option['maxAge'] ))
 
         return JSONResponse(ret)
 
