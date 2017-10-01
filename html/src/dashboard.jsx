@@ -338,7 +338,11 @@ export default class Dashboard extends React.Component {
             searchOptions.push(
                 <Media query={{ maxWidth: 768 }} key={2 * i + 1}>
                     {matches => matches ?
-                        (<hr key={i * 2 + 1} style={{ width: '550px' }} />) :
+                        (<Media query={{ maxWidth: 500 }} >
+                            {matches => matches ?
+                                (<hr key={i * 2 + 1} style={{ width: '300px' }} />) :
+                                (<hr key={i * 2 + 1} style={{ width: '550px' }} />)}
+                        </Media>) :
                         (<hr key={i * 2 + 1} style={{ width: '850px' }} />)}
                 </Media>)
         }
@@ -413,9 +417,9 @@ export default class Dashboard extends React.Component {
                                 </Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-                                <Col md={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)} style={{ marginTop: '10px', marginBottom: '10px' }}>查询速度</Button></Col>
-                                <Col md={3}><Button bsStyle="primary" style={{ marginTop: '10px', marginBottom: '10px' }}>查询轨迹</Button></Col>
-                                <Col md={3}><Button bsStyle="primary" style={{ marginTop: '10px', marginBottom: '10px' }}>查询热点</Button></Col>
+                                <Col sm={3} md={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)} style={{ marginTop: '10px', marginBottom: '10px' }}>查询速度</Button></Col>
+                                <Col sm={3} md={3}><Button bsStyle="primary" style={{ marginTop: '10px', marginBottom: '10px' }}>查询轨迹</Button></Col>
+                                <Col sm={3} md={3}><Button bsStyle="primary" style={{ marginTop: '10px', marginBottom: '10px' }}>查询热点</Button></Col>
                             </Row>
                         </Grid>
                     </Modal.Body>
