@@ -14,6 +14,12 @@ const MAX_DATA_COUNT = 20;
 const DAY = 24 * 60 * 60;
 const BEIJING_TIME = 8 * 60 * 60;
 
+const TIME_TYPE_DAY = 1;
+const TIME_TYPE_MONTH = 2;
+const TIME_TYPE_YEAR = 3;
+
+
+
 function fixTime(time) {
     const OFFSET = 8 * 60 * 60;
     time += OFFSET;
@@ -48,7 +54,8 @@ export default class Dashboard extends React.Component {
             names: [],
             groups: [],
             searchOption: [new SearchOption()],
-            activeKey: 'max'
+            activeKey: 'max',
+            timeType: TIME_TYPE_DAY
         };
         $.getJSON("/names/").then((data) => this.setState({ names: data }));
         $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
@@ -129,10 +136,10 @@ export default class Dashboard extends React.Component {
         this.maxSeries = [];
         this.minSeries = [];
         this.aveSeries = [];
-        var beg = this.state.beginDate
+        var beg = new Date(this.state.beginDate*1000)
         var timeIndex = []
-        for (var i = 0; i < MAX_DATA_COUNT; ++i, beg += 24 * 60 * 60) {
-            timeIndex[beg] = i;
+        for (var i = 0; i < MAX_DATA_COUNT; ++i, beg.setDate(beg.getDate()+1)) {
+            timeIndex[beg.valueOf()/1000] = i;
         }
         this.option.legend = {
             data: []
@@ -264,6 +271,11 @@ export default class Dashboard extends React.Component {
 
     }
 
+    handleTimeSelect(activeKey){
+        this.setState({ timeType: activeKey });
+        
+    }
+
     queryNames() {
         $.getJSON("/names/").then((data) => this.state.names = data);
     }
@@ -279,7 +291,7 @@ export default class Dashboard extends React.Component {
             method: "GET",
             url: "/speed/",
             traditional: true,
-            data: { searchOptions: JSON.stringify(searchOptions), begTime: this.state.beginDate, endTime: this.state.endDate }
+            data: { searchOptions: JSON.stringify(searchOptions), begTime: this.state.beginDate, endTime: this.state.endDate,  timeType: this.state.timeType}
         }).then((data) => {
             this.close();
 
@@ -384,10 +396,10 @@ export default class Dashboard extends React.Component {
                             <NavItem eventKey='average'>平均值</NavItem>
                         </Nav>
 
-                        <Nav pullRight bsStyle="pills" activeKey='year' style={{ marginLeft: '5px', marginTop: '5px' }}>
-                            <NavItem eventKey='year'>年</NavItem>
-                            <NavItem eventKey='month'>月</NavItem>
-                            <NavItem eventKey='day'>日</NavItem>
+                        <Nav pullRight bsStyle="pills" activeKey={this.state.timeType} onSelect={this.handleTimeSelect.bind(this)} style={{ marginLeft: '5px', marginTop: '5px' }}>
+                            <NavItem eventKey={TIME_TYPE_YEAR}>年</NavItem>
+                            <NavItem eventKey={TIME_TYPE_MONTH}>月</NavItem>
+                            <NavItem eventKey={TIME_TYPE_DAY}>日</NavItem>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
