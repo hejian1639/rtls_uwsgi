@@ -8,6 +8,8 @@ import { DatePicker, Select, InputNumber } from 'antd';
 const Option = Select.Option;
 import moment from 'moment';
 
+import Media from 'react-media'
+
 const MAX_DATA_COUNT = 20;
 const DAY = 24 * 60 * 60;
 const BEIJING_TIME = 8 * 60 * 60;
@@ -295,43 +297,52 @@ export default class Dashboard extends React.Component {
         for (var i = 0; i < length; ++i) {
             var element = this.state.searchOption[i];
             searchOptions.push(
-                <Row key={i * 3} className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-                    {(i == 0) ? (<Col sm={1}>查询条件：</Col>) : (<Col sm={1}></Col>)}
-                    <Col sm={3}>
-                        <span style={{ marginRight: '10px' }}>会员</span>
-                        <Select mode="multiple" defaultValue={element.selectedName} allowClear={true} onChange={this.handleNameSelect.bind(this, element)} style={{ width: 200 }}>
-                            {names}
-                        </Select>
+                <Row key={2 * i} className="show-grid" style={{ marginTop: '10px', marginBottom: '10px' }}>
+                    {(i == 0) ? (<Col sm={12} md={1}>查询条件：</Col>) : (<Col sm={12} md={1}></Col>)}
+                    <Col sm={7} md={7}>
+                        <Row className="show-grid">
+                            <Col sm={12} md={6} style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                <span style={{ marginRight: '10px' }}>会员</span>
+                                <Select mode="multiple" defaultValue={element.selectedName} allowClear={true} onChange={this.handleNameSelect.bind(this, element)} style={{ width: '150px' }}>
+                                    {names}
+                                </Select>
+                            </Col>
+                            <Col sm={12} md={6} style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                <span style={{ marginRight: '10px' }}>群组</span>
+                                <Select defaultValue={element.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this, element)} style={{ width: '150px' }}>
+                                    {groups}
+                                </Select>
+                            </Col>
+                        </Row>
+                        <Row className="show-grid" >
+                            <Col sm={12} md={6} style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                <span style={{ marginRight: '10px' }}>年龄</span>
+                                <InputNumber defaultValue={element.minAge} min={1} max={100} onChange={this.setMinAge.bind(this, element)} />
+                                <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
+                                <InputNumber defaultValue={element.maxAge} min={1} max={100} onChange={this.setMaxAge.bind(this, element)} />
+                            </Col>
+                            <Col sm={12} md={6} style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                <span style={{ marginRight: '10px' }}>性别</span>
+                                <Select defaultValue={element.selectedSex} allowClear={true} onChange={this.handleSexSelect.bind(this, element)} style={{ width: '100px' }}>
+                                    <Option key="male">男</Option >
+                                    <Option key="female">女</Option >
+                                </Select>
+                            </Col>
+                        </Row>
                     </Col>
-                    <Col sm={3}>
-                        <span style={{ marginRight: '10px' }}>群组</span>
-                        <Select defaultValue={element.selectedGroup} allowClear={true} onChange={this.handleGroupSelect.bind(this, element)} style={{ width: 200 }}>
-                            {groups}
-                        </Select>
-                    </Col>
-                    <Col sm={1}>
+                    <Col sm={1} md={1} style={{ marginTop: '20px' }}>
                         <Button onClick={this.handleDeleteOption.bind(this, i)} >-</Button>
                     </Col>
                 </Row>
             );
             searchOptions.push(
-                <Row key={i * 3 + 1} className="show-grid" style={{ marginTop: '10px', marginBottom: '30px' }}>
-                    <Col smOffset={1} sm={3}>
-                        <span style={{ marginRight: '10px' }}>年龄</span>
-                        <InputNumber defaultValue={element.minAge} min={1} max={100} onChange={this.setMinAge.bind(this, element)} />
-                        <span style={{ marginLeft: '5px', marginRight: '5px' }}> ~ </span>
-                        <InputNumber defaultValue={element.maxAge} min={1} max={100} onChange={this.setMaxAge.bind(this, element)} />
-                    </Col>
-                    <Col sm={2}>
-                        <span style={{ marginRight: '10px' }}>性别</span>
-                        <Select defaultValue={element.selectedSex} allowClear={true} onChange={this.handleSexSelect.bind(this, element)} style={{ width: 100 }}>
-                            <Option key="male">男</Option >
-                            <Option key="female">女</Option >
-                        </Select>
-                    </Col>
-                </Row>
-            );
-            searchOptions.push(<hr key={i * 3 + 2} style={{ width: '850px' }} />)
+                <Media query={{ maxWidth: 768 }}>
+                    {matches => matches ? (
+                        <hr key={i * 2 + 1} style={{ width: '550px' }} />
+                    ) : (
+                            <hr key={i * 2 + 1} style={{ width: '850px' }} />
+                        )}
+                </Media>)
         }
         return searchOptions;
     }
