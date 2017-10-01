@@ -337,11 +337,9 @@ export default class Dashboard extends React.Component {
             );
             searchOptions.push(
                 <Media query={{ maxWidth: 768 }}>
-                    {matches => matches ? (
-                        <hr key={i * 2 + 1} style={{ width: '550px' }} />
-                    ) : (
-                            <hr key={i * 2 + 1} style={{ width: '850px' }} />
-                        )}
+                    {matches => matches ?
+                        (<hr key={i * 2 + 1} style={{ width: '550px' }} />) :
+                        (<hr key={i * 2 + 1} style={{ width: '850px' }} />)}
                 </Media>)
         }
         return searchOptions;
@@ -368,6 +366,7 @@ export default class Dashboard extends React.Component {
                         <Navbar.Brand>
                             <span>数据查询</span>
                         </Navbar.Brand>
+                        <Navbar.Toggle />
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav>
@@ -375,13 +374,13 @@ export default class Dashboard extends React.Component {
                                 <Button bsStyle="primary" style={margin} onClick={this.open.bind(this)}>查询</Button>
                             </NavItem>
                         </Nav>
-                        <Nav bsStyle="pills" activeKey={this.state.activeKey} onSelect={this.handleValueSelect.bind(this)} style={{ marginTop: '5px' }}>
+                        <Nav bsStyle="pills" activeKey={this.state.activeKey} onSelect={this.handleValueSelect.bind(this)} style={{ marginLeft: '5px', marginTop: '5px' }}>
                             <NavItem eventKey='max'>最大值</NavItem>
                             <NavItem eventKey='min'>最小值</NavItem>
                             <NavItem eventKey='average'>平均值</NavItem>
                         </Nav>
 
-                        <Nav pullRight bsStyle="pills" activeKey='year' style={{ marginTop: '5px' }}>
+                        <Nav pullRight bsStyle="pills" activeKey='year' style={{ marginLeft: '5px', marginTop: '5px' }}>
                             <NavItem eventKey='year'>年</NavItem>
                             <NavItem eventKey='month'>月</NavItem>
                             <NavItem eventKey='day'>日</NavItem>
