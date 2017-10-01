@@ -299,7 +299,7 @@ export default class Dashboard extends React.Component {
             searchOptions.push(
                 <Row key={2 * i} className="show-grid" style={{ marginTop: '10px', marginBottom: '10px' }}>
                     {(i == 0) ? (<Col sm={12} md={1}>查询条件：</Col>) : (<Col sm={12} md={1}></Col>)}
-                    <Col sm={7} md={7}>
+                    <Col xs={10} sm={7} md={7}>
                         <Row className="show-grid">
                             <Col sm={12} md={6} style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <span style={{ marginRight: '10px' }}>会员</span>
@@ -330,13 +330,13 @@ export default class Dashboard extends React.Component {
                             </Col>
                         </Row>
                     </Col>
-                    <Col sm={1} md={1} style={{ marginTop: '20px' }}>
+                    <Col xs={1} sm={1} md={1} style={{ marginTop: '20px' }}>
                         <Button onClick={this.handleDeleteOption.bind(this, i)} >-</Button>
                     </Col>
                 </Row>
             );
             searchOptions.push(
-                <Media query={{ maxWidth: 768 }}>
+                <Media query={{ maxWidth: 768 }} key={2 * i + 1}>
                     {matches => matches ?
                         (<hr key={i * 2 + 1} style={{ width: '550px' }} />) :
                         (<hr key={i * 2 + 1} style={{ width: '850px' }} />)}
@@ -399,11 +399,11 @@ export default class Dashboard extends React.Component {
                                 <Col sm={1}>时间：</Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>起始时间</span>
-                                    <DatePicker defaultValue={moment.unix(this.state.beginDate)} allowClear={false} onChange={this.handleBeginDateChange.bind(this)} />
+                                    <DatePicker defaultValue={moment.unix(this.state.beginDate)} allowClear={false} onChange={this.handleBeginDateChange.bind(this)} style={{ marginTop: '10px', marginBottom: '10px' }} />
                                 </Col>
                                 <Col sm={3}>
                                     <span style={{ marginRight: '10px' }}>结束时间</span>
-                                    <DatePicker defaultValue={moment.unix(this.state.endDate)} allowClear={false} onChange={this.handleEndDateChange.bind(this)} />
+                                    <DatePicker defaultValue={moment.unix(this.state.endDate)} allowClear={false} onChange={this.handleEndDateChange.bind(this)} style={{ marginTop: '10px', marginBottom: '10px' }} />
                                 </Col>
                             </Row>
                             {this.generateSearchOption(names, groups)}
@@ -413,9 +413,9 @@ export default class Dashboard extends React.Component {
                                 </Col>
                             </Row>
                             <Row className="show-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-                                <Col sm={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)}>查询速度</Button></Col>
-                                <Col sm={3}><Button bsStyle="primary">查询轨迹</Button></Col>
-                                <Col sm={3}><Button bsStyle="primary">查询热点</Button></Col>
+                                <Col md={3}><Button bsStyle="primary" onClick={this.querySpeed.bind(this)} style={{ marginTop: '10px', marginBottom: '10px' }}>查询速度</Button></Col>
+                                <Col md={3}><Button bsStyle="primary" style={{ marginTop: '10px', marginBottom: '10px' }}>查询轨迹</Button></Col>
+                                <Col md={3}><Button bsStyle="primary" style={{ marginTop: '10px', marginBottom: '10px' }}>查询热点</Button></Col>
                             </Row>
                         </Grid>
                     </Modal.Body>
