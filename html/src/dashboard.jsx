@@ -18,13 +18,12 @@ const TIME_TYPE_DAY = 1;
 const TIME_TYPE_MONTH = 2;
 const TIME_TYPE_YEAR = 3;
 
-
+const TIME_OFFSET = 8 * 60 * 60;
 
 function fixTime(time) {
-    const OFFSET = 8 * 60 * 60;
-    time += OFFSET;
+    time += TIME_OFFSET;
     time -= time % (24 * 60 * 60);
-    time -= OFFSET;
+    time -= TIME_OFFSET;
     return time;
 }
 
@@ -136,11 +135,72 @@ export default class Dashboard extends React.Component {
         this.maxSeries = [];
         this.minSeries = [];
         this.aveSeries = [];
-        var beg = new Date(this.state.beginDate*1000)
-        var timeIndex = []
-        for (var i = 0; i < MAX_DATA_COUNT; ++i, beg.setDate(beg.getDate()+1)) {
-            timeIndex[beg.valueOf()/1000] = i;
+        var timeIndex = [];
+
+        switch (this.state.timeType) {
+            case TIME_TYPE_DAY:
+                var m = moment.unix(this.state.beginDate);
+                var timeData = [m.format('MMMM Do')];
+                for (var i = 0; i < MAX_DATA_COUNT; ++i) {
+                    timeData.push(m.add(1, 'days').format('MMMM Do'));
+                }
+                var xAxis = [
+                    {
+                        type: 'category',
+                        data: timeData
+                    }
+                ];
+                this.option.xAxis = xAxis;
+
+                var beg = new Date(this.state.beginDate * 1000)
+                for (var i = 0; i < MAX_DATA_COUNT; ++i, beg.setDate(beg.getDate() + 1)) {
+                    timeIndex[beg.getTime() / 1000] = i;
+                }
+                break;
+            case TIME_TYPE_MONTH:
+                var m = moment.unix(this.state.beginDate);
+                m = moment(new Date(m.year(), m.month(), 1, 0, 0, 0, 0));
+                var timeData = [m.format('MMMM YYYY')];
+                timeIndex[m.unix()] = 0;
+                for (var i = 0; i < MAX_DATA_COUNT; ++i) {
+                    timeData.push(m.add(1, 'months').format('MMMM YYYY'));
+                    timeIndex[m.unix()] = i + 1;
+                }
+                var xAxis = [
+                    {
+                        type: 'category',
+                        data: timeData
+                    }
+                ];
+                this.option.xAxis = xAxis;
+
+                break;
+            case TIME_TYPE_YEAR:
+                var m = moment.unix(this.state.beginDate);
+                m = moment(new Date(m.year(), 0, 1, 0, 0, 0, 0));
+                var timeData = [m.format('YYYY')];
+                timeIndex[m.unix()] = 0;
+                for (var i = 0; i < MAX_DATA_COUNT; ++i) {
+                    timeData.push(m.add(1, 'years').format('YYYY'));
+                    timeIndex[m.unix()] = i + 1;
+                }
+                var xAxis = [
+                    {
+                        type: 'category',
+                        data: timeData
+                    }
+                ];
+                this.option.xAxis = xAxis;
+
+
+                // var beg = new Date(this.state.beginDate * 1000)
+                // beg = new Date(beg.getFullYear(), 0, 0, 0, 0, 0, 0);
+                // for (var i = 0; i < MAX_DATA_COUNT; ++i, beg.setFullYear(beg.getFullYear() + 1)) {
+                //     timeIndex[beg.getTime() / 1000] = i;
+                // }
+                break;
         }
+
         this.option.legend = {
             data: []
         };
@@ -271,9 +331,9 @@ export default class Dashboard extends React.Component {
 
     }
 
-    handleTimeSelect(activeKey){
+    handleTimeSelect(activeKey) {
         this.setState({ timeType: activeKey });
-        
+
     }
 
     queryNames() {
@@ -291,7 +351,7 @@ export default class Dashboard extends React.Component {
             method: "GET",
             url: "/speed/",
             traditional: true,
-            data: { searchOptions: JSON.stringify(searchOptions), begTime: this.state.beginDate, endTime: this.state.endDate,  timeType: this.state.timeType}
+            data: { searchOptions: JSON.stringify(searchOptions), begTime: this.state.beginDate, endTime: this.state.endDate, timeType: this.state.timeType }
         }).then((data) => {
             this.close();
 
