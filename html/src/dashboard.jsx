@@ -332,8 +332,10 @@ export default class Dashboard extends React.Component {
     }
 
     handleTimeSelect(activeKey) {
-        this.setState({ timeType: activeKey });
-
+        // this.setState({ timeType: activeKey });
+        this.state.timeType = activeKey;
+        this.forceUpdate();
+        this.querySpeed();
     }
 
     queryNames() {
