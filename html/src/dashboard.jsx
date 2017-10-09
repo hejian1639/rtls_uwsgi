@@ -130,6 +130,30 @@ export default class Dashboard extends React.Component {
         this.option.xAxis = xAxis;
     }
 
+    stringfyOption(option) {
+        var str = '';
+        if (option.selectedName.length) {
+            str += option.selectedName + ' ';
+        }
+        if (option.selectedGroup) {
+            str += option.selectedGroup + ' ';
+        }
+        if (option.selectedSex) {
+            str += option.selectedSex + ' ';
+        }
+        if ((option.minAge == 1) && (option.maxAge == 100)) {
+            
+        } else {
+            str += option.minAge + '~' + option.maxAge;
+
+        }
+        if(str){
+
+            return str;
+        }
+        return '全部'
+    }
+
     initData(data) {
         console.log(data);
         this.maxSeries = [];
@@ -193,11 +217,6 @@ export default class Dashboard extends React.Component {
                 this.option.xAxis = xAxis;
 
 
-                // var beg = new Date(this.state.beginDate * 1000)
-                // beg = new Date(beg.getFullYear(), 0, 0, 0, 0, 0, 0);
-                // for (var i = 0; i < MAX_DATA_COUNT; ++i, beg.setFullYear(beg.getFullYear() + 1)) {
-                //     timeIndex[beg.getTime() / 1000] = i;
-                // }
                 break;
         }
 
@@ -205,21 +224,30 @@ export default class Dashboard extends React.Component {
             data: []
         };
 
+        var optionNameMap = new Map();
         for (var i = 0; i < data.length; ++i) {
+            var optionName = this.stringfyOption(this.state.searchOption[i]);
+            if(optionNameMap.get(optionName)){
+                optionName += 1;
+                optionNameMap.set(optionName, optionNameMap.get(optionName)+1);
+            }else{
+                optionNameMap.set(optionName, 1);
+                
+            }
             this.aveSeries.push({
-                name: '条件' + i,
+                name: optionName,
                 type: 'bar',
                 stack: 'average' + i,
                 data: []
             });
             this.maxSeries.push({
-                name: '条件' + i,
+                name: optionName,
                 type: 'bar',
                 stack: 'max' + i,
                 data: []
             });
             this.minSeries.push({
-                name: '条件' + i,
+                name: optionName,
                 type: 'bar',
                 stack: 'min' + i,
                 data: []
@@ -236,7 +264,7 @@ export default class Dashboard extends React.Component {
                 this.maxSeries[i].data[timeIndex[element._id]] = element.value.maxSpeed;
             });
 
-            this.option.legend.data.push('条件' + i);
+            this.option.legend.data.push(optionName);
 
         }
 
