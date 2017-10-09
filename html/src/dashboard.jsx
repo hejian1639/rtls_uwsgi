@@ -60,6 +60,9 @@ export default class Dashboard extends React.Component {
         $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
 
         this.option = {
+            title : {
+                text: '速度',
+            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {            // 坐标轴指示器，坐标轴触发有效
@@ -86,7 +89,10 @@ export default class Dashboard extends React.Component {
             calculable: true,
             yAxis: [
                 {
-                    type: 'value'
+                    type: 'value',
+                    axisLabel : {
+                        formatter: '{value} m/s'
+                    }
                 }
             ],
             series: [
