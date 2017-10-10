@@ -22,22 +22,21 @@ def name_query(request):
     if request.method == 'GET':
         result = db.rtls.aggregate([{"$group" : {"_id" : "$name", "number" : {"$sum" : 1}}}])
         result = list(result)
-        print json.dumps(result).decode("unicode_escape")
+        # print json.dumps(result).decode("unicode_escape")
         return JSONResponse(result)
 
     return HttpResponse(status=404)
 
 def group_query(request):
     if request.method == 'GET':
-        result = db.rtls.aggregate([{"$group" : {"_id" : "$group", "number" : {"$sum" : 1}}}])
+        result = db.rtls.aggregate([{"$unwind":"$group"},{"$group" : {"_id" : "$group", "number" : {"$sum" : 1}}}])
         result = list(result)
-        print json.dumps(result).decode("unicode_escape")
+        # print json.dumps(result).decode("unicode_escape")
         return JSONResponse(result)
 
     return HttpResponse(status=404)
 
 def speed_query_(begTime, endTime, timeType, names, group, sex, minAge, maxAge):
-    DAY = 24*60*60
     TIME_OFFSET = 8*60*60
 
     code ="function() {"
@@ -49,7 +48,7 @@ def speed_query_(begTime, endTime, timeType, names, group, sex, minAge, maxAge):
         code += "return;"
         code += "}"
     if group and group != '':
-        code += "if(this.group != \"" + group + "\")"
+        code += "if(this.group.indexOf(\"" + group + "\")==-1)"
         code += "return;"
     if sex and sex != '':
         code += "if(this.sex != \"" + sex + "\")"
@@ -81,7 +80,7 @@ def speed_query_(begTime, endTime, timeType, names, group, sex, minAge, maxAge):
 
     code += "emit(time, {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
     code += "}"
-    print code
+    # print code
     map = Code(code)
 
     code ="function(key, values) {"
@@ -125,7 +124,7 @@ def speed_query(request):
         timeType = json.loads(timeType)
 
         searchOptions = request.GET.get('searchOptions')
-        print searchOptions
+        # print searchOptions
 
         ret = []
         for option in json.loads(searchOptions):
