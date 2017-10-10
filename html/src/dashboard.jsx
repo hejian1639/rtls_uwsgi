@@ -274,20 +274,41 @@ export default class Dashboard extends React.Component {
 
         }
 
-        switch (this.state.activeKey) {
-            case 'max':
-                this.option.series = this.maxSeries;
-                break;
-            case 'min':
-                this.option.series = this.minSeries;
-                break;
-            case 'average':
-                this.option.series = this.aveSeries;
-                break;
-        }
+        this.switchData();
+        // switch (this.state.activeKey) {
+        //     case 'max':
+        //         this.option.series = this.maxSeries;
+        //         this.option.title.text = '最大速度';
+        //         break;
+        //     case 'min':
+        //         this.option.series = this.minSeries;
+        //         this.option.title.text = '最小速度';
+        //         break;
+        //     case 'average':
+        //         this.option.series = this.aveSeries;
+        //         this.option.title.text = '平均速度';
+        //         break;
+        // }
 
     }
 
+    switchData(){
+        switch (this.state.activeKey) {
+            case 'max':
+                this.option.series = this.maxSeries;
+                this.option.title.text = '最大速度';
+                break;
+            case 'min':
+                this.option.series = this.minSeries;
+                this.option.title.text = '最小速度';
+                break;
+            case 'average':
+                this.option.series = this.aveSeries;
+                this.option.title.text = '平均速度';
+                break;
+        }
+        
+    }
     componentWillMount() {
         $('#pageLoading').hide();
     }
@@ -349,24 +370,26 @@ export default class Dashboard extends React.Component {
     }
 
     handleValueSelect(activeKey) {
-        this.setState({ activeKey: activeKey });
-        switch (activeKey) {
-            case 'max':
-                this.option.series = this.maxSeries;
-                break;
-            case 'min':
-                this.option.series = this.minSeries;
-                break;
-            case 'average':
-                this.option.series = this.aveSeries;
-                break;
-        }
+        // this.setState({ activeKey: activeKey });
+        this.state.activeKey = activeKey;
+        this.forceUpdate();
+        this.switchData();
+        // switch (activeKey) {
+        //     case 'max':
+        //         this.option.series = this.maxSeries;
+        //         break;
+        //     case 'min':
+        //         this.option.series = this.minSeries;
+        //         break;
+        //     case 'average':
+        //         this.option.series = this.aveSeries;
+        //         break;
+        // }
         this.myChart.setOption(this.option, true);
 
     }
 
     handleTimeSelect(activeKey) {
-        // this.setState({ timeType: activeKey });
         this.state.timeType = activeKey;
         this.forceUpdate();
         this.querySpeed();
