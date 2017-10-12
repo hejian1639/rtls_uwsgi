@@ -78,33 +78,36 @@ def speed_query_(begTime, endTime, timeType, names, group, sex, minAge, maxAge):
     code += "time /= 1000;"
     code += "time -="+ str(TIME_OFFSET)+";"
 
-    code += "emit(time, {aveSpeed: this.speed, minSpeed: this.speed, maxSpeed: this.speed});"
+    code += "emit(time, {sum: this.speed, count: 1, minSpeed: this.speed, maxSpeed: this.speed});"
     code += "}"
     # print code
     map = Code(code)
 
     code ="function(key, values) {"
-    code += "var result = {aveSpeed: 0, minSpeed: 99999, maxSpeed: 0};"
-    code += "var sum = 0;"
-    code += "var total = 0;"
+    code += "var result = {sum: 0, count: 0, minSpeed: 99999, maxSpeed: 0};"
     code += "values.forEach( function(value) {"
-    code += "sum += value.aveSpeed;"
-    code += "if(result.maxSpeed < value.aveSpeed ){"
-    code += "result.maxSpeed = value.aveSpeed"
+    code += "result.sum += value.sum;"
+    code += "result.count += value.count;"
+    code += "if(result.maxSpeed < value.maxSpeed ){"
+    code += "result.maxSpeed = value.maxSpeed"
     code += "}"
-    code += "if(result.minSpeed > value.aveSpeed){"
-    code += "result.minSpeed = value.aveSpeed"
+    code += "if(result.minSpeed > value.minSpeed){"
+    code += "result.minSpeed = value.minSpeed"
     code += "}"
     code += "});"
-    code += "if(result.minSpeed > result.maxSpeed){"
-    code += "result.minSpeed = result.maxSpeed"
-    code += "}"
-    code += "result.aveSpeed = sum/values.length;"
     code += "return result;"
     code += "}"
+    # print code
     reduce = Code(code)
 
-    result = db.rtls.map_reduce(map, reduce, "result")
+    code = "function (key, reducedVal) {"
+    code += "reducedVal.aveSpeed = reducedVal.sum / reducedVal.count;"
+    code += "return reducedVal;"
+    code += "}"
+    # print code
+    finalizeFunc = Code(code)
+
+    result = db.rtls.map_reduce(map, reduce, finalize=finalizeFunc,  out={'merge': 'result'})
     ret = []
     for doc in result.find():
         ret.append(doc)
