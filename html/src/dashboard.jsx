@@ -26,7 +26,7 @@ function fixTime(time) {
     time -= TIME_OFFSET;
     return time;
 }
-
+var maxUID = 0;
 class SearchOption {
     constructor() {
         this.selectedName = [];
@@ -34,7 +34,7 @@ class SearchOption {
         this.selectedSex = '';
         this.minAge = 1;
         this.maxAge = 100;
-
+        this.uid = maxUID++;
     }
 }
 
@@ -60,7 +60,7 @@ export default class Dashboard extends React.Component {
         $.getJSON("/groups/").then((data) => this.setState({ groups: data }));
 
         this.option = {
-            title : {
+            title: {
                 text: '速度',
             },
             tooltip: {
@@ -90,7 +90,7 @@ export default class Dashboard extends React.Component {
             yAxis: [
                 {
                     type: 'value',
-                    axisLabel : {
+                    axisLabel: {
                         formatter: '{value} m/s'
                     }
                 }
@@ -148,12 +148,12 @@ export default class Dashboard extends React.Component {
             str += option.selectedSex + ' ';
         }
         if ((option.minAge == 1) && (option.maxAge == 100)) {
-            
+
         } else {
             str += option.minAge + '~' + option.maxAge;
 
         }
-        if(str){
+        if (str) {
 
             return str;
         }
@@ -233,12 +233,12 @@ export default class Dashboard extends React.Component {
         var optionNameMap = new Map();
         for (var i = 0; i < data.length; ++i) {
             var optionName = this.stringfyOption(this.state.searchOption[i]);
-            if(optionNameMap.get(optionName)){
+            if (optionNameMap.get(optionName)) {
                 optionName += 1;
-                optionNameMap.set(optionName, optionNameMap.get(optionName)+1);
-            }else{
+                optionNameMap.set(optionName, optionNameMap.get(optionName) + 1);
+            } else {
                 optionNameMap.set(optionName, 1);
-                
+
             }
             this.aveSeries.push({
                 name: optionName,
@@ -292,7 +292,7 @@ export default class Dashboard extends React.Component {
 
     }
 
-    switchData(){
+    switchData() {
         switch (this.state.activeKey) {
             case 'max':
                 this.option.series = this.maxSeries;
@@ -307,7 +307,7 @@ export default class Dashboard extends React.Component {
                 this.option.title.text = '平均速度';
                 break;
         }
-        
+
     }
     componentWillMount() {
         $('#pageLoading').hide();
@@ -428,7 +428,7 @@ export default class Dashboard extends React.Component {
         for (var i = 0; i < length; ++i) {
             var element = this.state.searchOption[i];
             searchOptions.push(
-                <Row key={2 * i} className="show-grid" style={{ marginTop: '10px', marginBottom: '10px' }}>
+                <Row key={2 * element.uid} className="show-grid" style={{ marginTop: '10px', marginBottom: '10px' }}>
                     {(i == 0) ? (<Col sm={12} md={1}>查询条件：</Col>) : (<Col sm={12} md={1}></Col>)}
                     <Col xs={10} sm={7} md={7}>
                         <Row className="show-grid">
@@ -467,7 +467,7 @@ export default class Dashboard extends React.Component {
                 </Row>
             );
             searchOptions.push(
-                <Media query={{ maxWidth: 768 }} key={2 * i + 1}>
+                <Media query={{ maxWidth: 768 }} key={i * 2 + 1}>
                     {matches => matches ?
                         (<Media query={{ maxWidth: 500 }} >
                             {matches => matches ?
