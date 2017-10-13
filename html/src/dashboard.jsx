@@ -61,13 +61,18 @@ export default class Dashboard extends React.Component {
 
         this.option = {
             title: {
-                text: '速度',
+                text: '条件',
+                x: 'center'
             },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                     type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 }
+            },
+            legend: {
+                data: ['全部'],
+                x: 'left'
             },
             dataZoom: {
                 show: true,
@@ -139,13 +144,13 @@ export default class Dashboard extends React.Component {
     stringfyOption(option) {
         var str = '';
         if (option.selectedName.length) {
-            str += option.selectedName + ' ';
+            str += option.selectedName + '、';
         }
         if (option.selectedGroup) {
-            str += option.selectedGroup + ' ';
+            str += option.selectedGroup + '、';
         }
         if (option.selectedSex) {
-            str += option.selectedSex + ' ';
+            str += option.selectedSex + '、';
         }
         if ((option.minAge == 1) && (option.maxAge == 100)) {
 
@@ -154,7 +159,9 @@ export default class Dashboard extends React.Component {
 
         }
         if (str) {
-
+            if (str[str.length - 1] == '、') {
+                str = str.substr(0, str.length - 1);
+            }
             return str;
         }
         return '全部'
@@ -227,12 +234,25 @@ export default class Dashboard extends React.Component {
         }
 
         this.option.legend = {
-            data: []
+            data: [],
+            x: 'left'
+        };
+
+        this.option.title = {
+            text: '',
+            x: 'center'
         };
 
         var optionNameMap = new Map();
         for (var i = 0; i < data.length; ++i) {
             var optionName = this.stringfyOption(this.state.searchOption[i]);
+            if (i == 0) {
+
+            } else {
+                this.option.title.text += ' ---- ';
+
+            }
+            this.option.title.text += optionName;
             if (optionNameMap.get(optionName)) {
                 optionName += 1;
                 optionNameMap.set(optionName, optionNameMap.get(optionName) + 1);
@@ -296,15 +316,15 @@ export default class Dashboard extends React.Component {
         switch (this.state.activeKey) {
             case 'max':
                 this.option.series = this.maxSeries;
-                this.option.title.text = '最大速度';
+                this.option.yAxis[0].name = '最大速度';
                 break;
             case 'min':
                 this.option.series = this.minSeries;
-                this.option.title.text = '最小速度';
+                this.option.yAxis[0].name = '最小速度';
                 break;
             case 'average':
                 this.option.series = this.aveSeries;
-                this.option.title.text = '平均速度';
+                this.option.yAxis[0].name = '平均速度';
                 break;
         }
 
