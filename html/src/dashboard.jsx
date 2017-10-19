@@ -174,12 +174,16 @@ export default class Dashboard extends React.Component {
         this.aveSeries = [];
         var timeIndex = [];
 
+        var maxCount = 0;
+        var beginMoment = moment.unix(this.state.beginDate);
+        var endMoment = moment.unix(this.state.endDate);
+
         switch (this.state.timeType) {
             case TIME_TYPE_DAY:
-                var m = moment.unix(this.state.beginDate);
-                var timeData = [m.format('MMMM Do')];
-                for (var i = 0; i < MAX_DATA_COUNT; ++i) {
-                    timeData.push(m.add(1, 'days').format('MMMM Do'));
+                maxCount = endMoment.diff(beginMoment, 'days');
+                var timeData = [beginMoment.format('MMMM Do')];
+                for (var i = 0; i < maxCount; ++i) {
+                    timeData.push(beginMoment.add(1, 'days').format('MMMM Do'));
                 }
                 var xAxis = [
                     {
@@ -190,16 +194,17 @@ export default class Dashboard extends React.Component {
                 this.option.xAxis = xAxis;
 
                 var beg = new Date(this.state.beginDate * 1000)
-                for (var i = 0; i < MAX_DATA_COUNT; ++i, beg.setDate(beg.getDate() + 1)) {
+                for (var i = 0; i < maxCount; ++i, beg.setDate(beg.getDate() + 1)) {
                     timeIndex[beg.getTime() / 1000] = i;
                 }
                 break;
             case TIME_TYPE_MONTH:
+                maxCount = endMoment.diff(beginMoment, 'months');
                 var m = moment.unix(this.state.beginDate);
                 m = moment(new Date(m.year(), m.month(), 1, 0, 0, 0, 0));
                 var timeData = [m.format('MMMM YYYY')];
                 timeIndex[m.unix()] = 0;
-                for (var i = 0; i < MAX_DATA_COUNT; ++i) {
+                for (var i = 0; i < maxCount; ++i) {
                     timeData.push(m.add(1, 'months').format('MMMM YYYY'));
                     timeIndex[m.unix()] = i + 1;
                 }
@@ -213,11 +218,12 @@ export default class Dashboard extends React.Component {
 
                 break;
             case TIME_TYPE_YEAR:
+                maxCount = endMoment.diff(beginMoment, 'years');
                 var m = moment.unix(this.state.beginDate);
                 m = moment(new Date(m.year(), 0, 1, 0, 0, 0, 0));
                 var timeData = [m.format('YYYY')];
                 timeIndex[m.unix()] = 0;
-                for (var i = 0; i < MAX_DATA_COUNT; ++i) {
+                for (var i = 0; i < maxCount; ++i) {
                     timeData.push(m.add(1, 'years').format('YYYY'));
                     timeIndex[m.unix()] = i + 1;
                 }
@@ -278,7 +284,7 @@ export default class Dashboard extends React.Component {
                 stack: 'min' + i,
                 data: []
             });
-            for (var j = 0; j < MAX_DATA_COUNT; ++j) {
+            for (var j = 0; j < maxCount; ++j) {
                 this.aveSeries[i].data.push(0)
                 this.maxSeries[i].data.push(0)
                 this.minSeries[i].data.push(0)
@@ -434,7 +440,7 @@ export default class Dashboard extends React.Component {
         }).then((data) => {
             this.close();
 
-            this.initDate();
+            // this.initDate();
             this.initData(data);
             this.myChart.setOption(this.option, true);
         }).always(() => {
