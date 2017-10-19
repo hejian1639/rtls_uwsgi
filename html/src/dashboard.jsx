@@ -20,6 +20,8 @@ const TIME_TYPE_YEAR = 3;
 
 const TIME_OFFSET = 8 * 60 * 60;
 
+const MAX_VIEW_COUNT = 25;
+
 function fixTime(time) {
     time += TIME_OFFSET;
     time -= time % (24 * 60 * 60);
@@ -77,6 +79,7 @@ export default class Dashboard extends React.Component {
             dataZoom: {
                 show: true,
                 start: 0,
+                end: 100
             },
             toolbox: {
                 show: true,
@@ -251,21 +254,21 @@ export default class Dashboard extends React.Component {
 
         var optionNameMap = new Map();
         for (var i = 0; i < data.length; ++i) {
-            var optionName = this.stringfyOption(this.state.searchOption[i]);
             if (i == 0) {
 
             } else {
                 this.option.title.text += ' ---- ';
 
             }
-            this.option.title.text += optionName;
+            var optionName = this.stringfyOption(this.state.searchOption[i]);
             if (optionNameMap.get(optionName)) {
-                optionName += 1;
                 optionNameMap.set(optionName, optionNameMap.get(optionName) + 1);
+                optionName += optionNameMap.get(optionName);
             } else {
                 optionNameMap.set(optionName, 1);
 
             }
+            this.option.title.text += optionName;
             this.aveSeries.push({
                 name: optionName,
                 type: 'bar',
@@ -299,22 +302,14 @@ export default class Dashboard extends React.Component {
             this.option.legend.data.push(optionName);
 
         }
+        var totalCount = data.length * maxCount;
+        if (totalCount > MAX_VIEW_COUNT) {
+            this.option.dataZoom.end = 100 * MAX_VIEW_COUNT / totalCount;
+        } else {
+            this.option.dataZoom.end = 100;
 
+        }
         this.switchData();
-        // switch (this.state.activeKey) {
-        //     case 'max':
-        //         this.option.series = this.maxSeries;
-        //         this.option.title.text = '最大速度';
-        //         break;
-        //     case 'min':
-        //         this.option.series = this.minSeries;
-        //         this.option.title.text = '最小速度';
-        //         break;
-        //     case 'average':
-        //         this.option.series = this.aveSeries;
-        //         this.option.title.text = '平均速度';
-        //         break;
-        // }
 
     }
 
@@ -400,17 +395,7 @@ export default class Dashboard extends React.Component {
         this.state.activeKey = activeKey;
         this.forceUpdate();
         this.switchData();
-        // switch (activeKey) {
-        //     case 'max':
-        //         this.option.series = this.maxSeries;
-        //         break;
-        //     case 'min':
-        //         this.option.series = this.minSeries;
-        //         break;
-        //     case 'average':
-        //         this.option.series = this.aveSeries;
-        //         break;
-        // }
+ 
         this.myChart.setOption(this.option, true);
 
     }
@@ -440,9 +425,9 @@ export default class Dashboard extends React.Component {
         }).then((data) => {
             this.close();
 
-            // this.initDate();
             this.initData(data);
             this.myChart.setOption(this.option, true);
+            this.myChart.restore();
         }).always(() => {
             this.myChart.hideLoading();
         });
