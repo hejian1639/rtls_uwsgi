@@ -4,7 +4,8 @@
   "description": "node modules",
   "author": "John He",
   "scripts": {
-    "start": "babel-node server.js"
+    "start": "babel-node server.js",
+    "build": "webpack -p"
   },
   "dependencies": {
     "ajax-request": "^1.2.1",
